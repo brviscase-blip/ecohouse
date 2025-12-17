@@ -20,12 +20,12 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
 
       {/* Main Content Container */}
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-16 flex flex-col justify-center">
-        <div className="max-w-6xl space-y-6 md:space-y-8 animate-fade-in-up">
+        <div className="max-w-6xl space-y-8 md:space-y-12 animate-fade-in-up">
           
           {/* Label de Identificação */}
           <div className="flex items-center gap-4">
             <span className="h-px w-8 md:w-12 bg-[#1BA19A]"></span>
-            <span className="text-[#1BA19A] text-[7px] md:text-[9px] font-black uppercase tracking-[0.5em]">Casas Sustentáveis</span>
+            <span className="text-[#1BA19A] text-[7px] md:text-[9px] font-black uppercase tracking-[0.5em]">Engenharia Sustentável</span>
           </div>
           
           {/* Título Principal Compactado */}
@@ -34,26 +34,28 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
             <span className="text-[#1BA19A]">FUTURO AGORA.</span>
           </h1>
           
-          {/* Parágrafo de Apoio - Manifesto Atualizado conforme solicitação */}
-          <p className="text-sm md:text-lg text-gray-400 font-light max-w-xl leading-relaxed transition-colors">
-            Somos uma empresa do ramo de <br className="hidden md:block"/>
-            engenharia civil que acredita na <br className="hidden md:block"/>
-            sustentabilidade como meio de garantir <br className="hidden md:block"/>
-            a perpetuação e a evolução das empresas.
-          </p>
+          {/* Parágrafo de Apoio - Manifesto com Melhor Distribuição */}
+          <div className="space-y-4">
+            <p className="text-base md:text-xl text-slate-300 font-light max-w-2xl leading-[1.8] tracking-wide transition-colors">
+              Somos uma empresa do ramo de <span className="text-white font-medium">engenharia civil</span> que acredita na <br className="hidden md:block"/>
+              sustentabilidade como meio de garantir a <span className="text-[#1BA19A] font-bold">perpetuação</span> <br className="hidden md:block"/>
+              e a <span className="text-[#1BA19A] font-bold">evolução</span> das empresas.
+            </p>
+            <div className="h-px w-24 bg-[#1BA19A]/30"></div>
+          </div>
           
           {/* Ações Compactas */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-2">
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <button 
               onClick={() => onNavigate?.('contact')}
-              className="group flex items-center justify-center gap-6 px-8 py-4 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[9px] font-black uppercase tracking-[0.3em] transition-all rounded-sm shadow-xl"
+              className="group flex items-center justify-center gap-6 px-10 py-5 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-sm shadow-xl"
             >
               Iniciar Projeto
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
             </button>
             <button 
               onClick={() => onNavigate?.('about')}
-              className="px-8 py-4 border border-white/10 hover:border-[#1BA19A]/50 text-white text-[9px] font-bold uppercase tracking-[0.3em] backdrop-blur-md transition-all rounded-sm text-center"
+              className="px-10 py-5 border border-white/10 hover:border-[#1BA19A]/50 text-white text-[10px] font-bold uppercase tracking-[0.3em] backdrop-blur-md transition-all rounded-sm text-center"
             >
               Nossa Visão
             </button>
