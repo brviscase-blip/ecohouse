@@ -96,7 +96,7 @@ const ContactPage: React.FC = () => {
           <div className="lg:col-span-7 order-1 lg:order-2">
             {formStatus === 'success' ? (
               <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-[#f2f8f7] dark:bg-[#082a29] border border-[#1BA19A]/20 p-8 md:p-16 text-center animate-fade-in">
-                <div className="w-20 h-20 md:w-24 md:h-24 bg-[#1BA19A] text-white rounded-full flex items-center justify-center mb-8 shadow-xl">
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-[#1BA19A] text-white rounded-full flex items-center justify-center mb-8 shadow-md">
                   <CheckCircle className="h-10 w-10 md:h-12 md:w-12" />
                 </div>
                 <h4 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-4">Requisição Enviada</h4>
@@ -109,7 +109,7 @@ const ContactPage: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-2xl p-6 md:p-16 relative">
+              <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xl p-6 md:p-16 relative">
                 <div className="absolute top-0 right-0 w-12 h-12 md:w-20 md:h-20 border-r-2 border-t-2 border-slate-100 dark:border-slate-800 -translate-y-2 translate-x-2 md:-translate-y-4 md:translate-x-4 pointer-events-none"></div>
                 
                 <form onSubmit={handleSubmit} className="space-y-8 md:space-y-10">
@@ -138,7 +138,7 @@ const ContactPage: React.FC = () => {
                   <button 
                     type="submit" 
                     disabled={formStatus === 'submitting'}
-                    className="w-full py-5 md:py-6 bg-[#1BA19A] text-white font-black text-[10px] md:text-[11px] uppercase tracking-[0.4em] shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-4 disabled:opacity-50"
+                    className="w-full py-5 md:py-6 bg-[#1BA19A] text-white font-black text-[10px] md:text-[11px] uppercase tracking-[0.4em] transition-all active:scale-[0.98] flex items-center justify-center gap-4 disabled:opacity-50 shadow-sm"
                   >
                     {formStatus === 'submitting' ? 'Processando...' : 'Enviar Requisição'}
                   </button>

@@ -95,7 +95,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
             <button 
               onClick={() => handleMobileNavigate('contact')}
-              className="hidden sm:block px-6 md:px-8 py-3 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[9px] font-bold uppercase tracking-[0.4em] rounded transition-all shadow-xl shadow-[#1BA19A]/20 active:scale-95"
+              className="hidden sm:block px-6 md:px-8 py-3 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[9px] font-bold uppercase tracking-[0.4em] rounded transition-all active:scale-95 shadow-sm"
             >
               Contato
             </button>
@@ -119,7 +119,7 @@ const Navbar: React.FC<NavbarProps> = ({
           ))}
           <button 
             onClick={() => handleMobileNavigate('contact')}
-            className="mt-4 w-full py-5 bg-[#1BA19A] text-white font-black uppercase tracking-[0.4em] text-xs shadow-2xl"
+            className="mt-4 w-full py-5 bg-[#1BA19A] text-white font-black uppercase tracking-[0.4em] text-xs"
           >
             Solicitar Orçamento
           </button>

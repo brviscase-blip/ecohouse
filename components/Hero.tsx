@@ -50,7 +50,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <button 
               onClick={() => onNavigate?.('contact')}
-              className="group flex items-center justify-center gap-6 px-10 py-5 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-sm shadow-xl"
+              className="group flex items-center justify-center gap-6 px-10 py-5 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-sm shadow-sm"
             >
               Iniciar Projeto
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
