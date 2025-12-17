@@ -52,7 +52,7 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
             
             <div className="relative h-[200px] md:h-[380px] order-2 lg:order-1">
               <div className="absolute inset-0 bg-emerald-500/5 rounded-2xl md:rounded-3xl translate-x-2 translate-y-2"></div>
-              <div className="relative h-full w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-slate-900">
+              <div className="relative h-full w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-lg border border-gray-200 dark:border-slate-900">
                 <img 
                   src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80" 
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
@@ -74,7 +74,7 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
 
               <div className="space-y-3">
                 {ecoHouseClients.map((client, idx) => (
-                  <div key={idx} className="flex items-center gap-5 p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-emerald-500/30 transition-all shadow-sm">
+                  <div key={idx} className="flex items-center gap-5 p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-emerald-500/30 transition-all shadow-sm">
                     <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 bg-emerald-500 text-white rounded-xl flex items-center justify-center">
                       {client.icon}
                     </div>
@@ -108,7 +108,7 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
 
               <div className="space-y-3">
                 {ecoProClientsData.map((client, idx) => (
-                  <div key={idx} className="flex items-center gap-5 p-4 bg-white dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-sky-500/30 transition-all shadow-sm">
+                  <div key={idx} className="flex items-center gap-5 p-4 bg-white dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-sky-500/30 transition-all shadow-sm">
                     <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 bg-sky-500 text-white rounded-xl flex items-center justify-center">
                       {client.icon}
                     </div>
@@ -123,7 +123,7 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
 
             <div className="relative h-[200px] md:h-[380px]">
               <div className="absolute inset-0 bg-sky-500/5 rounded-2xl md:rounded-3xl -translate-x-2 translate-y-2"></div>
-              <div className="relative h-full w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-slate-950">
+              <div className="relative h-full w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-lg border border-gray-200 dark:border-slate-950">
                 <img 
                   src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80" 
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
