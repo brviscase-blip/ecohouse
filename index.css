@@ -11,7 +11,8 @@
 
 html {
   scroll-behavior: smooth;
-  font-size: 90%;
+  /* Reduzido de 90% para 75% para aplicar o zoom out de 25% solicitado */
+  font-size: 75%;
   -webkit-text-size-adjust: 100%;
 }
 
