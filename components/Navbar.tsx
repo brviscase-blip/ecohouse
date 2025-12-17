@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Menu, X, Linkedin, Instagram, MessageCircle, ArrowUpRight } from 'lucide-react';
+import { Sun, Moon, Menu, X, ArrowUpRight } from 'lucide-react';
 
 interface NavbarProps {
   theme?: 'light' | 'dark';
@@ -33,7 +33,6 @@ const Navbar: React.FC<NavbarProps> = ({
     const body = document.body;
     if (isMobileMenuOpen) {
       body.style.overflow = 'hidden';
-      // Evita o "pulo" do scrollbar
       body.style.paddingRight = '0px'; 
     } else {
       body.style.overflow = '';
@@ -130,8 +129,8 @@ const Navbar: React.FC<NavbarProps> = ({
 
         <div className="relative h-full flex flex-col px-10 pt-24 pb-10 overflow-y-auto overflow-x-hidden">
           
-          {/* LOGO - Sempre Branca/Invertida */}
-          <div className="mb-16 relative">
+          {/* LOGO - Topo do Menu */}
+          <div className="mb-10 relative">
             <div className="absolute -inset-8 bg-emerald-500/10 blur-[40px] rounded-full opacity-50 animate-pulse pointer-events-none"></div>
             <img 
               src={logoUrl} 
@@ -140,8 +139,8 @@ const Navbar: React.FC<NavbarProps> = ({
             />
           </div>
 
-          {/* NAV LINKS - Layout Conforme Anexo */}
-          <div className="flex-grow flex flex-col">
+          {/* NAV LINKS */}
+          <div className="flex-grow flex flex-col justify-start gap-1">
             {navLinks.map((link, index) => (
               <button
                 key={link.view}
@@ -163,13 +162,11 @@ const Navbar: React.FC<NavbarProps> = ({
             ))}
           </div>
 
-          {/* FOOTER DO MENU - Layout Conforme Anexo */}
-          <div className="mt-12 space-y-8">
-            <div className="h-px w-full bg-white/10"></div>
-            
-            <div className="space-y-4">
-              <p className="text-[8px] font-black text-white/30 uppercase tracking-[0.4em]">Inicie uma Conversa</p>
-              <button 
+          {/* FOOTER DO MENU - Refined Layout */}
+          <div className="mt-8 flex flex-col w-full">
+             <div className="mb-16">
+               <p className="text-[8px] font-black text-white/30 uppercase tracking-[0.4em] mb-4">Inicie uma Conversa</p>
+               <button 
                 onClick={() => handleMobileNavigate('contact')}
                 className="w-full py-5 bg-[#1BA19A] text-white font-black uppercase tracking-[0.4em] text-[10px] rounded flex items-center justify-center gap-3 transition-transform active:scale-95 shadow-[0_10px_30px_-10px_rgba(27,161,154,0.4)]"
               >
@@ -177,13 +174,25 @@ const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
 
-            <div className="flex items-center justify-between pt-4">
-              <div className="flex gap-6">
-                <a href="#" className="text-white/30 hover:text-[#1BA19A] transition-colors"><Linkedin className="h-5 w-5" /></a>
-                <a href="#" className="text-white/30 hover:text-[#1BA19A] transition-colors"><Instagram className="h-5 w-5" /></a>
-                <a href="#" className="text-white/30 hover:text-[#1BA19A] transition-colors"><MessageCircle className="h-5 w-5" /></a>
+            <div className="flex flex-col items-center">
+              {/* Logo Footer - Espaçamento ajustado (mb-8) */}
+              <img 
+                src={logoUrl} 
+                alt="EcoHouse" 
+                className="h-7 w-auto object-contain brightness-0 invert opacity-60 mb-8" 
+              />
+              
+              {/* Copyright - Mais afastado da logo */}
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mb-10 text-center">
+                © 2025 — Ecohouse Construções Sustentáveis
+              </p>
+              
+              {/* Text Links */}
+              <div className="flex items-center gap-8 md:gap-12">
+                <a href="#" className="text-[8px] font-black text-white/30 hover:text-[#1BA19A] uppercase tracking-[0.25em] transition-colors">Linkedin</a>
+                <a href="#" className="text-[8px] font-black text-white/30 hover:text-[#1BA19A] uppercase tracking-[0.25em] transition-colors">Instagram</a>
+                <a href="#" className="text-[8px] font-black text-white/30 hover:text-[#1BA19A] uppercase tracking-[0.25em] transition-colors">WhatsApp</a>
               </div>
-              <p className="text-[7px] font-bold text-white/20 uppercase tracking-[0.3em]">ECOHOUSE © 2024</p>
             </div>
           </div>
         </div>
