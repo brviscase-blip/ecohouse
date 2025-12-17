@@ -36,7 +36,8 @@ const ContactPage: React.FC = () => {
   return (
     <div className="bg-white dark:bg-slate-950 min-h-screen transition-colors duration-500">
       
-      <section className="relative py-20 md:py-32 bg-[#0a0f12] overflow-hidden">
+      {/* Hero Padronizado */}
+      <section className="relative py-24 md:py-32 bg-[#0a0f12] overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f12] via-[#0a0f12]/80 to-transparent z-10"></div>
           <img 
@@ -46,12 +47,12 @@ const ContactPage: React.FC = () => {
           />
         </div>
         
-        <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-16 flex flex-col items-start gap-4">
+        <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-16 flex flex-col items-center md:items-start text-center md:text-left gap-4">
           <div className="flex items-center gap-3 md:gap-4 text-[#1BA19A]">
             <Zap className="h-6 w-6 md:h-8 md:w-8" />
             <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em]">Central de Atendimento</span>
           </div>
-          <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-none">
+          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-none">
             Vamos Iniciar <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1BA19A] to-[#1BA19A]/50">Seu Projeto.</span>
           </h1>

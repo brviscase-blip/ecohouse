@@ -26,22 +26,23 @@ const Blog: React.FC<BlogProps> = ({ posts, isAdmin, onPostSelect, onRequestCrea
   return (
     <div className="bg-white dark:bg-slate-950 min-h-screen transition-colors duration-500">
       
-      <section className="relative py-32 md:py-48 bg-[#0a0f12] overflow-hidden">
+      {/* Hero Padronizado */}
+      <section className="relative py-24 md:py-32 bg-[#0a0f12] overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f12] via-[#0a0f12]/40 to-[#0a0f12] z-10"></div>
           <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=80" className="w-full h-full object-cover opacity-40 mix-blend-luminosity scale-105" alt="Technical" />
         </div>
         
-        <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-8 text-center space-y-6 md:space-y-8">
-          <div className="inline-flex items-center justify-center p-5 bg-emerald-500/10 backdrop-blur-md rounded-full border border-emerald-500/20 mb-2 animate-fade-in">
-            <BookOpen className="h-10 w-10 md:h-14 md:w-14 text-emerald-500" />
+        <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-8 text-center space-y-8">
+          <div className="inline-flex items-center justify-center p-4 bg-emerald-500/10 backdrop-blur-md rounded-full border border-emerald-500/20 mb-2 animate-fade-in">
+            <BookOpen className="h-10 w-10 text-emerald-500" />
           </div>
           <div className="space-y-4 animate-fade-in-up">
-            <h1 className="text-4xl md:text-8xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">
               Artigos & <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-emerald-200">Registros Técnicos</span>
             </h1>
-            <p className="text-emerald-400 font-bold uppercase tracking-[0.4em] text-[8px] md:text-xs">Documentação de Engenharia e Inovação</p>
+            <p className="text-emerald-400 font-bold uppercase tracking-[0.4em] text-[10px] md:text-xs">Documentação de Engenharia e Inovação</p>
           </div>
         </div>
       </section>

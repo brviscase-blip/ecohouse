@@ -59,8 +59,8 @@ const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNavigate }) =
 
   return (
     <div className="pt-20 animate-fade-in">
-      {/* Hero Section Certificações */}
-      <section className="relative py-48 bg-[#0a0f12] overflow-hidden">
+      {/* Hero Padronizado */}
+      <section className="relative py-24 md:py-32 bg-[#0a0f12] overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f12] via-[#0a0f12]/40 to-[#0a0f12] z-10"></div>
           <img 
@@ -71,15 +71,15 @@ const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNavigate }) =
         </div>
         
         <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 text-center space-y-8">
-          <div className="inline-flex items-center justify-center p-6 bg-emerald-500/10 backdrop-blur-md rounded-full border border-emerald-500/20 mb-4">
-            <ShieldCheck className="h-14 w-14 text-emerald-500" />
+          <div className="inline-flex items-center justify-center p-4 bg-emerald-500/10 backdrop-blur-md rounded-full border border-emerald-500/20 mb-2">
+            <ShieldCheck className="h-10 w-10 text-emerald-500" />
           </div>
           <div className="space-y-4">
-            <h1 className="text-5xl md:text-8xl font-bold text-white tracking-tighter uppercase leading-[0.9]">
+            <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter uppercase leading-[0.9]">
               Certificações <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-emerald-200">De Excelência</span>
             </h1>
-            <p className="text-emerald-400 font-bold uppercase tracking-[0.6em] text-xs md:text-sm">
+            <p className="text-emerald-400 font-bold uppercase tracking-[0.6em] text-[10px] md:text-xs">
               Com reconhecimento internacional
             </p>
           </div>
@@ -87,9 +87,9 @@ const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNavigate }) =
       </section>
 
       {/* Seção 1: Produto e Setor */}
-      <section className="py-32 bg-gray-50 dark:bg-slate-900 transition-colors relative">
+      <section className="py-24 bg-gray-50 dark:bg-slate-900 transition-colors relative">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-24 space-y-6">
+          <div className="text-center mb-16 md:mb-24 space-y-6">
             <div className="flex items-center justify-center gap-4">
               <span className="h-px w-10 bg-emerald-500"></span>
               <h2 className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold tracking-[0.4em] uppercase">Setor Específico</h2>
@@ -121,7 +121,7 @@ const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNavigate }) =
       </section>
 
       {/* Seção 2: Sistemas de Gestão */}
-      <section className="py-32 bg-white dark:bg-slate-950 transition-colors border-t border-gray-100 dark:border-slate-900">
+      <section className="py-24 bg-white dark:bg-slate-950 transition-colors border-t border-gray-100 dark:border-slate-900">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-24">
             <div className="lg:w-1/3 space-y-10">
@@ -154,8 +154,8 @@ const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNavigate }) =
         </div>
       </section>
 
-      {/* CTA FINAL COM BACKGOUND DE FOLHA PADRONIZADO */}
-      <section className="py-32 bg-emerald-950 text-white relative overflow-hidden group">
+      {/* CTA FINAL */}
+      <section className="py-24 bg-emerald-950 text-white relative overflow-hidden group">
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=2000&q=80" 

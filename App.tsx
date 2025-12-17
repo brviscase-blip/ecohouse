@@ -80,21 +80,12 @@ const App: React.FC = () => {
   };
 
   const handleSaveNewPost = (post: BlogPost) => {
-    // FECHAR O MODAL IMEDIATAMENTE
     setIsCreatingPost(false);
-    
-    // Adiciona o novo post ao início da lista
     const updatedPosts = [post, ...blogPosts];
     setBlogPosts(updatedPosts);
-    
-    // Persiste no LocalStorage
     localStorage.setItem('cs_blog_posts', JSON.stringify(updatedPosts));
-    
-    // Reseta estados e navega para a lista de blog para ver o novo post
     setSelectedPost(null);
     setCurrentView('blog');
-    
-    // Feedback suave no scroll
     setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
   };
 
@@ -145,7 +136,8 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <Footer />
+      {/* Exibe o Footer apenas se NÃO estiver na Home e não tiver um post selecionado */}
+      {currentView !== 'home' && !selectedPost && <Footer />}
       
       <AdminPortal 
         isAdmin={isAdmin} 
