@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle, Zap, User, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle, Headset, User, MessageSquare } from 'lucide-react';
 
 const ContactPage: React.FC = () => {
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
@@ -49,8 +49,8 @@ const ContactPage: React.FC = () => {
         
         <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-16 flex flex-col items-center md:items-start text-center md:text-left gap-4">
           <div className="flex items-center gap-3 md:gap-4 text-[#1BA19A]">
-            <Zap className="h-6 w-6 md:h-8 md:w-8" />
-            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em]">Central de Atendimento</span>
+            <Headset className="h-6 w-6 md:h-8 md:w-8" />
+            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em]">Solicite um Orçamento</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-none">
             Vamos Iniciar <br/>
