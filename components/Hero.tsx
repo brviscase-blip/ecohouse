@@ -7,7 +7,7 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
   return (
-    <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-[#0a0f12]">
+    <section className="relative h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-[#0a0f12]">
       {/* Background Image Layer */}
       <div className="absolute inset-0 z-0">
         <img
@@ -20,7 +20,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
 
       {/* Main Content Container */}
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-16 flex flex-col justify-center">
-        <div className="max-w-6xl space-y-8 md:space-y-12 animate-fade-in-up">
+        <div className="max-w-6xl space-y-4 md:space-y-12 animate-fade-in-up">
           
           {/* Label de Identificação */}
           <div className="flex items-center gap-4">
@@ -37,27 +37,27 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
           </h1>
           
           {/* Parágrafo de Apoio - Manifesto com Melhor Distribuição */}
-          <div className="space-y-4">
-            <p className="text-base md:text-xl text-slate-300 font-light max-w-2xl leading-[1.8] tracking-wide transition-colors">
+          <div className="space-y-2 md:space-y-4">
+            <p className="text-sm md:text-xl text-slate-300 font-light max-w-2xl leading-[1.6] md:leading-[1.8] tracking-wide transition-colors">
               Somos uma empresa do ramo de <span className="text-white font-medium">engenharia civil</span> que acredita na <br className="hidden md:block"/>
               sustentabilidade como meio de garantir a <span className="text-[#1BA19A] font-bold">perpetuação</span> <br className="hidden md:block"/>
               e a <span className="text-[#1BA19A] font-bold">evolução</span> das empresas.
             </p>
-            <div className="h-px w-24 bg-[#1BA19A]/30"></div>
+            <div className="h-px w-16 md:w-24 bg-[#1BA19A]/30"></div>
           </div>
           
           {/* Ações Compactas */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
             <button 
               onClick={() => onNavigate?.('contact')}
-              className="group flex items-center justify-center gap-6 px-10 py-5 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-sm shadow-sm"
+              className="group flex items-center justify-center gap-6 px-8 py-4 md:px-10 md:py-5 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-sm shadow-sm"
             >
               Iniciar Projeto
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
             </button>
             <button 
               onClick={() => onNavigate?.('about')}
-              className="px-10 py-5 border border-white/10 hover:border-[#1BA19A]/50 text-white text-[10px] font-bold uppercase tracking-[0.3em] backdrop-blur-md transition-all rounded-sm text-center"
+              className="px-8 py-4 md:px-10 md:py-5 border border-white/10 hover:border-[#1BA19A]/50 text-white text-[10px] font-bold uppercase tracking-[0.3em] backdrop-blur-md transition-all rounded-sm text-center"
             >
               Nossa Visão
             </button>
@@ -78,7 +78,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
       </div>
 
       {/* Integrated Compact Footer (Absolute Bottom) */}
-      <div className="absolute bottom-8 left-0 w-full px-6 md:px-16 flex flex-col md:flex-row justify-between items-center gap-6 z-20">
+      <div className="absolute bottom-4 md:bottom-8 left-0 w-full px-6 md:px-16 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 z-20">
         <div className="flex items-center gap-6 text-white/30">
           <p className="text-[8px] font-black uppercase tracking-[0.3em]">
             © {new Date().getFullYear()} — ECOHOUSE Construções
