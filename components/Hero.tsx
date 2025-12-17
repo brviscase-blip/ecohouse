@@ -30,8 +30,8 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
           
           {/* Título Principal Compactado */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter uppercase transition-all">
-            CONSTRUÍMOS O <br className="hidden md:block"/>
-            <span className="text-[#1BA19A]">FUTURO AGORA.</span>
+            FUTURO <br className="hidden md:block"/>
+            <span className="text-[#1BA19A]">CONSTRUÍMOS AGORA!</span>
           </h1>
           
           {/* Parágrafo de Apoio - Manifesto com Melhor Distribuição */}

@@ -109,8 +109,8 @@ const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNavigate }) =
                 <div className="absolute top-0 right-0 p-5 opacity-5 text-emerald-500 group-hover:opacity-10 transition-opacity">
                    {cert.icon}
                 </div>
-                <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center rounded-xl mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shadow-inner">
-                  <div className="group-hover:scale-105 transition-transform duration-300">
+                <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center rounded-xl mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shadow-inner">
+                  <div className="group-hover:scale-[1.03] origin-center transition-transform duration-500">
                     {cert.icon}
                   </div>
                 </div>
@@ -143,8 +143,8 @@ const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNavigate }) =
 
             <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {managementCerts.map((cert, idx) => (
-                <div key={idx} className="p-6 border border-gray-200 dark:border-slate-800 rounded-2xl hover:border-emerald-500/50 hover:bg-gray-50 dark:hover:bg-slate-900 transition-all duration-300 flex flex-col gap-4 group">
-                  <div className="text-emerald-500 group-hover:scale-105 transition-transform duration-300">{cert.icon}</div>
+                <div key={idx} className="p-6 border border-gray-200 dark:border-slate-800 rounded-2xl hover:border-emerald-500/50 hover:bg-gray-50 dark:hover:bg-slate-900 transition-all duration-500 flex flex-col gap-4 group">
+                  <div className="w-fit text-emerald-500 group-hover:scale-[1.03] origin-center transition-transform duration-500">{cert.icon}</div>
                   <div>
                     <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 transition-colors">{cert.title}</h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400 font-light leading-relaxed">{cert.desc}</p>
