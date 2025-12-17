@@ -29,12 +29,18 @@ const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Correção: Garante que o scroll é restaurado limpando o estilo inline ('')
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     }
+    
+    // Cleanup function para garantir que o scroll volte caso o componente desmonte
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isMobileMenuOpen]);
 
   const shouldBeTransparent = isTransparent && !isScrolled && !isMobileMenuOpen;

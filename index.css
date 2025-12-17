@@ -14,6 +14,9 @@ html {
   /* Reduzido de 90% para 75% para aplicar o zoom out de 25% solicitado */
   font-size: 75%;
   -webkit-text-size-adjust: 100%;
+  /* GARANTIA DE SCROLL DESKTOP */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 body {
@@ -23,6 +26,8 @@ body {
   background-color: #ffffff;
   transition: background-color 0.5s ease;
   overflow-x: hidden;
+  /* Evita que o scroll-x hidden do body oculte o scroll-y em alguns navegadores */
+  overflow-y: auto; 
 }
 
 /* Blueprint Grid Texture - Usando a nova cor #1BA19A */
