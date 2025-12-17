@@ -18,6 +18,12 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
     { name: "DINÂMICA ENG", detail: "INFRAESTRUTURA PESADA", icon: <HardHat className="h-5 w-5" /> }
   ];
 
+  const corporateValues = [
+    { title: "Sustentabilidade Integral", icon: <Globe className="h-4 w-4" /> },
+    { title: "Inovação Tecnológica", icon: <Cpu className="h-4 w-4" /> },
+    { title: "Transparência Ética", icon: <Shield className="h-4 w-4" /> }
+  ];
+
   return (
     <div className="bg-white dark:bg-slate-950 transition-colors duration-500 min-h-screen">
       
@@ -75,22 +81,15 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
                 </h3>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-3">
                 {ecoHouseClients.map((client, idx) => (
-                  <div 
-                    key={idx} 
-                    className="flex items-center gap-4 md:gap-6 p-6 md:p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.4)] hover:shadow-[0_25px_60px_-12px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_25px_60px_-12px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-all duration-500 group cursor-default"
-                  >
-                    <div className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
+                  <div key={idx} className="flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl md:rounded-3xl shadow-sm hover:border-emerald-500/30 transition-all">
+                    <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 bg-emerald-500 text-white rounded-xl flex items-center justify-center">
                       {client.icon}
                     </div>
                     <div className="flex-grow">
-                      <h4 className="text-lg md:text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter transition-colors group-hover:text-emerald-500">
-                        {client.name}
-                      </h4>
-                      <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                        {client.detail}
-                      </p>
+                      <h4 className="text-base md:text-lg font-black text-slate-900 dark:text-white uppercase tracking-tighter">{client.name}</h4>
+                      <p className="text-[7px] md:text-[8px] font-bold text-slate-400 uppercase tracking-widest">{client.detail}</p>
                     </div>
                   </div>
                 ))}
@@ -117,22 +116,15 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
                 </h3>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-3">
                 {ecoProClientsData.map((client, idx) => (
-                  <div 
-                    key={idx} 
-                    className="flex items-center gap-4 md:gap-6 p-6 md:p-8 bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-3xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.4)] hover:shadow-[0_25px_60px_-12px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_25px_60px_-12px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-all duration-500 group cursor-default"
-                  >
-                    <div className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 bg-sky-500 text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
+                  <div key={idx} className="flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-white dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 rounded-2xl md:rounded-3xl shadow-sm hover:border-sky-500/30 transition-all">
+                    <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 bg-sky-500 text-white rounded-xl flex items-center justify-center">
                       {client.icon}
                     </div>
                     <div className="flex-grow">
-                      <h4 className="text-lg md:text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter transition-colors group-hover:text-sky-500">
-                        {client.name}
-                      </h4>
-                      <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                        {client.detail}
-                      </p>
+                      <h4 className="text-base md:text-lg font-black text-slate-900 dark:text-white uppercase tracking-tighter">{client.name}</h4>
+                      <p className="text-[7px] md:text-[8px] font-bold text-slate-400 uppercase tracking-widest">{client.detail}</p>
                     </div>
                   </div>
                 ))}
