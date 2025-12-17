@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ArrowRight, Linkedin, Instagram, MessageCircle } from 'lucide-react';
 
@@ -32,12 +31,15 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
           {/* Título Principal Compactado */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter uppercase transition-all">
             CONSTRUÍMOS O <br className="hidden md:block"/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1BA19A] to-emerald-200">FUTURO AGORA.</span>
+            <span className="text-[#1BA19A]">FUTURO AGORA.</span>
           </h1>
           
-          {/* Parágrafo de Apoio */}
+          {/* Parágrafo de Apoio - Manifesto Atualizado conforme solicitação */}
           <p className="text-sm md:text-lg text-gray-400 font-light max-w-xl leading-relaxed transition-colors">
-            Integração total entre tecnologias ecológicas e gestão de alta performance. <br className="hidden md:block"/> Racionalização e respeito ao meio ambiente.
+            Somos uma empresa do ramo de <br className="hidden md:block"/>
+            engenharia civil que acredita na <br className="hidden md:block"/>
+            sustentabilidade como meio de garantir <br className="hidden md:block"/>
+            a perpetuação e a evolução das empresas.
           </p>
           
           {/* Ações Compactas */}

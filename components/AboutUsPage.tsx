@@ -21,13 +21,13 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
   return (
     <div className="bg-white dark:bg-slate-950 transition-colors duration-500 min-h-screen">
       
-      {/* Hero Padronizado */}
-      <section className="relative py-24 md:py-32 bg-[#0a0f12] overflow-hidden">
+      {/* Hero Padronizado - 45% Ocupação */}
+      <section className="relative h-[45vh] min-h-[400px] bg-[#0a0f12] overflow-hidden flex flex-col justify-center pt-20">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f12] via-[#0a0f12]/60 to-[#0a0f12] z-10"></div>
           <img 
             src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80" 
-            className="w-full h-full object-cover opacity-30 mix-blend-luminosity scale-100"
+            className="w-full h-full object-cover opacity-30 mix-blend-luminosity"
             alt="Main Architecture"
           />
         </div>

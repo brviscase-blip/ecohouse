@@ -58,14 +58,14 @@ const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNavigate }) =
   ];
 
   return (
-    <div className="pt-20 animate-fade-in">
-      {/* Hero Padronizado */}
-      <section className="relative py-24 md:py-32 bg-[#0a0f12] overflow-hidden">
+    <div className="animate-fade-in">
+      {/* Hero Padronizado - 45% Ocupação */}
+      <section className="relative h-[45vh] min-h-[400px] bg-[#0a0f12] overflow-hidden flex flex-col justify-center pt-20">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f12] via-[#0a0f12]/40 to-[#0a0f12] z-10"></div>
           <img 
             src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=2000&q=80" 
-            className="w-full h-full object-cover opacity-40 mix-blend-luminosity scale-105"
+            className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
             alt="Sustainable Architecture Detail"
           />
         </div>

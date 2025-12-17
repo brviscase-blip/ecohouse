@@ -36,8 +36,8 @@ const ContactPage: React.FC = () => {
   return (
     <div className="bg-white dark:bg-slate-950 min-h-screen transition-colors duration-500">
       
-      {/* Hero Padronizado */}
-      <section className="relative py-24 md:py-32 bg-[#0a0f12] overflow-hidden">
+      {/* Hero Padronizado - 45% Ocupação */}
+      <section className="relative h-[45vh] min-h-[400px] bg-[#0a0f12] overflow-hidden flex flex-col justify-center pt-20">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f12] via-[#0a0f12]/80 to-transparent z-10"></div>
           <img 

@@ -26,11 +26,11 @@ const Blog: React.FC<BlogProps> = ({ posts, isAdmin, onPostSelect, onRequestCrea
   return (
     <div className="bg-white dark:bg-slate-950 min-h-screen transition-colors duration-500">
       
-      {/* Hero Padronizado */}
-      <section className="relative py-24 md:py-32 bg-[#0a0f12] overflow-hidden">
+      {/* Hero Padronizado - 45% Ocupação */}
+      <section className="relative h-[45vh] min-h-[400px] bg-[#0a0f12] overflow-hidden flex flex-col justify-center pt-20">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f12] via-[#0a0f12]/40 to-[#0a0f12] z-10"></div>
-          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=80" className="w-full h-full object-cover opacity-40 mix-blend-luminosity scale-105" alt="Technical" />
+          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=80" className="w-full h-full object-cover opacity-40 mix-blend-luminosity" alt="Technical" />
         </div>
         
         <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-8 text-center space-y-8">
