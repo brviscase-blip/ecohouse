@@ -97,7 +97,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
   };
 
   return (
-    <div className="animate-fade-in bg-white dark:bg-slate-950 min-h-screen pt-24 pb-12 relative transition-colors duration-500">
+    <div className="animate-fade-in bg-white dark:bg-slate-950 min-h-screen pt-36 pb-12 relative transition-colors duration-500">
       {showSavedMsg && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[50000] bg-emerald-600 text-white px-6 py-2.5 shadow-2xl flex items-center gap-2 animate-fade-in-up rounded-full">
           <CheckCircle className="h-4 w-4" />
@@ -106,7 +106,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
       )}
 
       <div className="max-w-4xl mx-auto px-6">
-        <button onClick={onBack} className="flex items-center gap-3 text-slate-400 hover:text-emerald-600 font-bold text-[9px] uppercase tracking-[0.4em] mb-10 transition-all group">
+        <button onClick={onBack} className="flex items-center gap-3 text-slate-400 hover:text-emerald-600 font-bold text-[9px] uppercase tracking-[0.4em] mb-12 transition-all group">
           <ChevronLeft className="h-4 w-4" /> <span>Voltar para a Listagem</span>
         </button>
 

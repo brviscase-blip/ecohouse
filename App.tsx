@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -101,7 +100,7 @@ const App: React.FC = () => {
       <Navbar 
         theme={theme} 
         onToggleTheme={toggleTheme} 
-        isTransparent={currentView === 'home'}
+        isTransparent={currentView === 'home' && !selectedPost && !isCreatingPost}
         activeView={currentView}
         onNavigate={handleNavigate}
       />

@@ -47,7 +47,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${shouldBeTransparent ? 'bg-transparent py-6 md:py-8' : 'bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg py-4 border-b border-gray-100 dark:border-slate-900 shadow-sm'}`}>
+      <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${shouldBeTransparent ? 'bg-transparent py-6 md:py-8' : 'bg-white dark:bg-slate-950 py-4 border-b border-gray-100 dark:border-slate-900 shadow-sm'}`}>
         <div className="max-w-[1600px] mx-auto px-6 md:px-16 flex justify-between items-center">
           <div 
             onClick={() => handleMobileNavigate('home')}
@@ -95,7 +95,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
             <button 
               onClick={() => handleMobileNavigate('contact')}
-              className="hidden sm:block px-6 md:px-8 py-3 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[9px] font-bold uppercase tracking-[0.4em] rounded transition-all active:scale-95 shadow-sm"
+              className="hidden sm:block px-6 md:px-8 py-3 bg-[#1BA19A] hover:bg-[#15827d] text-white text-[9px] font-bold uppercase tracking-[0.4em] rounded transition-all active:scale-95"
             >
               Contato
             </button>
