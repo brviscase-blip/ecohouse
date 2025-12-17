@@ -41,9 +41,6 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
               Engenharia <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-emerald-200">De Valor.</span>
             </h1>
-            <p className="text-emerald-400 font-bold uppercase tracking-[0.4em] text-[7px] md:text-[9px]">
-              Liderança em Sustentabilidade e Gestão
-            </p>
           </div>
         </div>
       </section>
@@ -139,15 +136,16 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* CTA COMPACTO */}
+      {/* CTA COMPACTO - NITIDEZ MÁXIMA (OPACIDADE 75%) */}
       <section className="py-20 md:py-28 bg-emerald-950 text-white relative overflow-hidden group">
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=2000&q=80" 
-            className="w-full h-full object-cover opacity-20 mix-blend-luminosity scale-100"
+            className="w-full h-full object-cover opacity-75 mix-blend-luminosity scale-105 transition-all duration-700 group-hover:scale-110"
             alt="Leaf Texture"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/90 to-emerald-950/60"></div>
+          {/* Gradiente minimizado ao máximo para revelar os detalhes da folhagem */}
+          <div className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/40 to-transparent"></div>
         </div>
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10 space-y-8">
           <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase leading-[0.85]">
