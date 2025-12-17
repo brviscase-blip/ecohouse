@@ -51,8 +51,8 @@ const Blog: React.FC<BlogProps> = ({ posts, isAdmin, onPostSelect, onRequestCrea
       <div className="max-w-7xl mx-auto px-6 md:px-12 pt-16 md:pt-20 pb-24 md:pb-32">
         
         {isAdmin && (
-          <div className="mb-10 flex justify-center md:justify-end">
-            <button onClick={onRequestCreate} className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-8 md:px-10 py-4 text-[9px] font-black uppercase tracking-[0.4em] shadow-xl flex items-center justify-center gap-4 active:scale-95">
+          <div className="hidden lg:flex mb-10 justify-end">
+            <button onClick={onRequestCreate} className="w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-4 text-[9px] font-black uppercase tracking-[0.4em] shadow-xl flex items-center justify-center gap-4 active:scale-95">
               <Plus className="h-4 w-4" /> Novo Registro
             </button>
           </div>

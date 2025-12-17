@@ -28,9 +28,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onLogin, onLogout, isAdmin })
 
   return (
     <>
-      {/* Gatilho de Gestão Administrativa */}
+      {/* Gatilho de Gestão Administrativa - Oculto em Mobile (hidden lg:flex) */}
       <div 
-        className="fixed bottom-0 right-0 w-8 h-8 z-[9999] cursor-pointer opacity-10 hover:opacity-100 transition-opacity flex items-center justify-center bg-transparent group"
+        className="hidden lg:flex fixed bottom-0 right-0 w-8 h-8 z-[9999] cursor-pointer opacity-10 hover:opacity-100 transition-opacity items-center justify-center bg-transparent group"
         onClick={() => isAdmin ? onLogout() : setShowLogin(true)}
       >
         {isAdmin ? (

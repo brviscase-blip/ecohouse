@@ -120,7 +120,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
           <div className="flex justify-between items-end gap-8">
             <h2 className="text-2xl md:text-4xl font-black text-slate-950 dark:text-white tracking-tighter leading-tight uppercase max-w-2xl">{post.title}</h2>
             {isAdmin && (
-              <button onClick={() => setIsEditing(true)} className="p-3 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border border-emerald-500/10">
+              <button onClick={() => setIsEditing(true)} className="hidden lg:block p-3 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border border-emerald-500/10">
                 <Edit2 className="h-5 w-5" />
               </button>
             )}

@@ -66,7 +66,7 @@ const About: React.FC<AboutProps> = ({ isAdmin }) => {
             />
             
             {isAdmin && (
-              <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-4">
+              <div className="hidden lg:flex absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex-col items-center justify-center gap-4">
                 <label className="flex items-center gap-3 px-6 py-3 bg-white text-slate-900 rounded-full text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-emerald-50 transition-all shadow-xl">
                   <Upload className="h-4 w-4" />
                   Trocar Imagem
@@ -86,7 +86,7 @@ const About: React.FC<AboutProps> = ({ isAdmin }) => {
               {isAdmin && !isEditingTexts && (
                 <button 
                   onClick={() => setIsEditingTexts(true)}
-                  className="p-2 text-emerald-400 bg-emerald-400/10 rounded-full hover:bg-emerald-400/20 transition-colors"
+                  className="hidden lg:block p-2 text-emerald-400 bg-emerald-400/10 rounded-full hover:bg-emerald-400/20 transition-colors"
                 >
                   <Edit3 className="h-4 w-4" />
                 </button>
