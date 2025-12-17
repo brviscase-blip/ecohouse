@@ -29,17 +29,20 @@ const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Correção: Garante que o scroll é restaurado limpando o estilo inline ('')
   useEffect(() => {
+    const body = document.body;
     if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      // Evita o "pulo" do scrollbar
+      body.style.paddingRight = '0px'; 
     } else {
-      document.body.style.overflow = '';
+      body.style.overflow = '';
+      body.style.paddingRight = '';
     }
     
-    // Cleanup function para garantir que o scroll volte caso o componente desmonte
     return () => {
-      document.body.style.overflow = '';
+      body.style.overflow = '';
+      body.style.paddingRight = '';
     };
   }, [isMobileMenuOpen]);
 
@@ -116,69 +119,71 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
       </nav>
 
-      {/* Modern Mobile Menu Overlay */}
+      {/* MOBILE MENU - FORCED DARK ALWAYS */}
       <div className={`fixed inset-0 z-[105] lg:hidden transition-all duration-700 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        {/* Backdrop Glass */}
-        <div className="absolute inset-0 bg-slate-950/98 backdrop-blur-2xl"></div>
         
-        {/* Tech Grid Pattern (Subtle) */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-blueprint"></div>
+        {/* Fundo Totalmente Escuro (Independente do tema) */}
+        <div className="absolute inset-0 bg-[#0a0f12] backdrop-blur-3xl"></div>
+        
+        {/* Tech Grid Pattern (Sutil) */}
+        <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-blueprint"></div>
 
-        <div className="relative h-full flex flex-col pt-32 px-10 pb-12 overflow-y-auto">
+        <div className="relative h-full flex flex-col px-10 pt-24 pb-10 overflow-y-auto overflow-x-hidden">
           
-          {/* Logo no Topo do Menu Mobile - MAXIMIZADA */}
-          <div className={`absolute top-10 left-10 transition-all duration-700 delay-300 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-            {/* Spotlight Glow behind logo */}
-            <div className="absolute -inset-10 bg-emerald-500/20 blur-[60px] rounded-full opacity-40 animate-pulse pointer-events-none"></div>
-            
+          {/* LOGO - Sempre Branca/Invertida */}
+          <div className="mb-16 relative">
+            <div className="absolute -inset-8 bg-emerald-500/10 blur-[40px] rounded-full opacity-50 animate-pulse pointer-events-none"></div>
             <img 
               src={logoUrl} 
               alt="EcoHouse" 
-              className="h-14 md:h-16 w-auto object-contain brightness-0 invert opacity-100 contrast-[1.2] drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] relative z-10"
+              className="h-14 w-auto object-contain brightness-0 invert drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
             />
           </div>
 
-          {/* Menu Items Container */}
-          <div className="flex-grow flex flex-col justify-center gap-2">
+          {/* NAV LINKS - Layout Conforme Anexo */}
+          <div className="flex-grow flex flex-col">
             {navLinks.map((link, index) => (
               <button
                 key={link.view}
                 onClick={() => handleMobileNavigate(link.view)}
-                style={{ transitionDelay: `${index * 50}ms` }}
-                className={`group flex items-center justify-between py-5 border-b border-white/5 transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                className={`group flex items-center justify-between py-6 border-b border-white/5 transition-all duration-300`}
               >
-                <div className="flex items-baseline gap-4">
-                  <span className={`text-[10px] font-black tracking-widest ${activeView === link.view ? 'text-[#1BA19A]' : 'text-white/20'}`}>
+                <div className="flex items-center gap-6">
+                  <span className={`text-[10px] font-bold tracking-widest ${activeView === link.view ? 'text-[#1BA19A]' : 'text-white/20'}`}>
                     {link.num}
                   </span>
-                  <span className={`text-3xl md:text-4xl font-black uppercase tracking-tighter transition-all ${activeView === link.view ? 'text-[#1BA19A] pl-2' : 'text-white group-hover:pl-2'}`}>
+                  <span className={`text-3xl font-black uppercase tracking-tighter transition-all ${activeView === link.view ? 'text-[#1BA19A]' : 'text-white group-hover:text-[#1BA19A]'}`}>
                     {link.label}
                   </span>
                 </div>
-                <ArrowUpRight className={`h-6 w-6 transition-all duration-300 ${activeView === link.view ? 'text-[#1BA19A] opacity-100' : 'text-white/0 group-hover:opacity-40 group-hover:text-white'}`} />
+                {activeView === link.view && (
+                  <ArrowUpRight className="h-6 w-6 text-[#1BA19A] animate-pulse" />
+                )}
               </button>
             ))}
           </div>
 
-          {/* Mobile Menu Footer */}
-          <div className={`mt-12 pt-8 border-t border-white/10 flex flex-col gap-8 transition-all duration-700 delay-300 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="flex flex-col gap-4">
+          {/* FOOTER DO MENU - Layout Conforme Anexo */}
+          <div className="mt-12 space-y-8">
+            <div className="h-px w-full bg-white/10"></div>
+            
+            <div className="space-y-4">
               <p className="text-[8px] font-black text-white/30 uppercase tracking-[0.4em]">Inicie uma Conversa</p>
               <button 
                 onClick={() => handleMobileNavigate('contact')}
-                className="w-full py-5 bg-[#1BA19A] text-white font-black uppercase tracking-[0.4em] text-[10px] rounded-sm active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                className="w-full py-5 bg-[#1BA19A] text-white font-black uppercase tracking-[0.4em] text-[10px] rounded flex items-center justify-center gap-3 transition-transform active:scale-95 shadow-[0_10px_30px_-10px_rgba(27,161,154,0.4)]"
               >
                 Solicitar Orçamento <ArrowUpRight className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pt-4">
               <div className="flex gap-6">
-                <a href="#" className="text-white/40 hover:text-[#1BA19A] transition-colors"><Linkedin className="h-5 w-5" /></a>
-                <a href="#" className="text-white/40 hover:text-[#1BA19A] transition-colors"><Instagram className="h-5 w-5" /></a>
-                <a href="#" className="text-white/40 hover:text-[#1BA19A] transition-colors"><MessageCircle className="h-5 w-5" /></a>
+                <a href="#" className="text-white/30 hover:text-[#1BA19A] transition-colors"><Linkedin className="h-5 w-5" /></a>
+                <a href="#" className="text-white/30 hover:text-[#1BA19A] transition-colors"><Instagram className="h-5 w-5" /></a>
+                <a href="#" className="text-white/30 hover:text-[#1BA19A] transition-colors"><MessageCircle className="h-5 w-5" /></a>
               </div>
-              <p className="text-[7px] font-bold text-white/20 uppercase tracking-widest">ECOHOUSE © 2024</p>
+              <p className="text-[7px] font-bold text-white/20 uppercase tracking-[0.3em]">ECOHOUSE © 2024</p>
             </div>
           </div>
         </div>
