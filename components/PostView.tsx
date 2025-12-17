@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, Calendar, Clock, Edit2, X, Save, Image as ImageIcon, CheckCircle, FileText, Upload, FileCheck, AlertCircle, ChevronDown, Trash2, Plus, Zap } from 'lucide-react';
 import { BlogPost } from '../types';
@@ -98,80 +97,76 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
   };
 
   return (
-    <div className="animate-fade-in bg-white dark:bg-slate-950 min-h-screen pt-32 pb-20 relative transition-colors duration-500">
+    <div className="animate-fade-in bg-white dark:bg-slate-950 min-h-screen pt-24 pb-12 relative transition-colors duration-500">
       {showSavedMsg && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[50000] bg-emerald-600 text-white px-8 py-3 shadow-2xl flex items-center gap-3 animate-fade-in-up rounded-full">
-          <CheckCircle className="h-5 w-5" />
-          <span className="text-[10px] font-bold uppercase tracking-widest">Sincronizado</span>
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[50000] bg-emerald-600 text-white px-6 py-2.5 shadow-2xl flex items-center gap-2 animate-fade-in-up rounded-full">
+          <CheckCircle className="h-4 w-4" />
+          <span className="text-[9px] font-black uppercase tracking-widest">Sincronizado</span>
         </div>
       )}
 
-      <div className="max-w-5xl mx-auto px-8">
-        <button onClick={onBack} className="flex items-center gap-4 text-slate-400 hover:text-emerald-600 font-bold text-[11px] uppercase tracking-[0.4em] mb-16 transition-all group">
-          <ChevronLeft className="h-5 w-5" /> <span>Voltar para a Listagem</span>
+      <div className="max-w-4xl mx-auto px-6">
+        <button onClick={onBack} className="flex items-center gap-3 text-slate-400 hover:text-emerald-600 font-bold text-[9px] uppercase tracking-[0.4em] mb-10 transition-all group">
+          <ChevronLeft className="h-4 w-4" /> <span>Voltar para a Listagem</span>
         </button>
 
-        <div className="space-y-8 mb-16">
-          <div className="flex items-center gap-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+        <div className="space-y-5 mb-10">
+          <div className="flex items-center gap-4 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
             <span className="text-emerald-600">{post.category}</span>
-            <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> {post.date}</span>
-            <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> {post.readTime}</span>
+            <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {post.date}</span>
+            <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {post.readTime}</span>
           </div>
           
-          <div className="flex justify-between items-end gap-12">
-            <h2 className="text-4xl md:text-6xl font-bold text-slate-950 dark:text-white tracking-tighter leading-tight uppercase">{post.title}</h2>
+          <div className="flex justify-between items-end gap-8">
+            <h2 className="text-2xl md:text-4xl font-black text-slate-950 dark:text-white tracking-tighter leading-tight uppercase max-w-2xl">{post.title}</h2>
             {isAdmin && (
-              <button onClick={() => setIsEditing(true)} className="p-4 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-xl transition-all shadow-sm border border-emerald-500/10">
-                <Edit2 className="h-6 w-6" />
+              <button onClick={() => setIsEditing(true)} className="p-3 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border border-emerald-500/10">
+                <Edit2 className="h-5 w-5" />
               </button>
             )}
           </div>
         </div>
 
-        {/* Capa com Texto Overlay */}
-        <div className="relative aspect-[21/9] mb-20 overflow-hidden rounded-3xl shadow-xl border border-gray-100 dark:border-slate-900 group">
+        {/* Capa Compactada (21/7 aspect ratio) */}
+        <div className="relative aspect-[21/7] mb-12 overflow-hidden rounded-2xl shadow-lg border border-gray-100 dark:border-slate-900 group">
           <img src={post.imageUrl} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="" />
           
-          {/* Overlay Tipográfico */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-8 md:p-12">
-            <div className="flex flex-col gap-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-              <span className="text-[9px] md:text-[10px] font-bold text-emerald-400 uppercase tracking-[0.5em] mb-1 drop-shadow-md">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex flex-col justify-end p-6 md:p-8">
+            <div className="flex flex-col gap-0.5 translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
+              <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-[0.4em] mb-0.5 drop-shadow-md">
                 Construções Sustentáveis
               </span>
-              <div className="flex items-center gap-3">
-                <div className="h-px w-8 bg-white/50"></div>
-                <span className="text-[10px] md:text-xs font-medium text-white/90 uppercase tracking-[0.4em]">
+              <div className="flex items-center gap-2">
+                <div className="h-px w-6 bg-white/40"></div>
+                <span className="text-[8px] font-medium text-white/90 uppercase tracking-[0.3em]">
                   Registro Técnico #{post.id}
                 </span>
               </div>
             </div>
           </div>
           
-          <div className="absolute top-8 right-8 p-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-            <Zap className="h-4 w-4 text-emerald-400" />
+          <div className="absolute top-6 right-6 p-2.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+            <Zap className="h-3.5 w-3.5 text-emerald-400" />
           </div>
         </div>
 
-        <div className="max-w-3xl mx-auto mb-20">
+        <div className="max-w-2xl mx-auto mb-16">
           <div 
-            className="prose prose-xl dark:prose-invert text-slate-900 dark:text-emerald-50 leading-relaxed font-normal mb-20"
+            className="prose prose-base dark:prose-invert text-slate-800 dark:text-emerald-50/90 leading-relaxed font-normal mb-16"
             dangerouslySetInnerHTML={{ __html: post.content || post.excerpt || "" }}
           />
 
-          {/* Galeria de Exibição com Overlay */}
+          {/* Galeria Compacta */}
           {post.additionalImages && post.additionalImages.length > 0 && (
-            <div className="mt-20 pt-20 border-t border-gray-100 dark:border-slate-800">
-              <h4 className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.4em] mb-10">Galeria de Fotos</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="mt-12 pt-12 border-t border-gray-100 dark:border-slate-800">
+              <h4 className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.3em] mb-8">Anexos Fotográficos</h4>
+              <div className="grid grid-cols-2 gap-5">
                 {post.additionalImages.map((img, idx) => (
-                  <div key={idx} className="relative aspect-square overflow-hidden rounded-2xl shadow-lg border border-gray-100 dark:border-slate-900 group">
+                  <div key={idx} className="relative aspect-square overflow-hidden rounded-xl shadow-md border border-gray-100 dark:border-slate-900 group">
                     <img src={img} className="w-full h-full object-cover hover:scale-110 transition-transform duration-1000" alt={`Gallery ${idx}`} />
-                    
-                    {/* Overlay de Detalhe na Galeria */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500"></div>
-                    <div className="absolute bottom-6 left-6 flex items-center gap-2">
-                       <div className="px-3 py-1.5 bg-emerald-600/90 backdrop-blur-sm text-white text-[8px] font-bold uppercase tracking-widest rounded-sm">
-                         Detalhe {idx + 1}
+                    <div className="absolute bottom-4 left-4">
+                       <div className="px-2 py-1 bg-emerald-600/90 backdrop-blur-sm text-white text-[7px] font-bold uppercase tracking-widest rounded-sm">
+                         Det {idx + 1}
                        </div>
                     </div>
                   </div>
