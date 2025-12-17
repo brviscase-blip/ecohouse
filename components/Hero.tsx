@@ -28,10 +28,12 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
             <span className="text-[#1BA19A] text-[7px] md:text-[9px] font-black uppercase tracking-[0.5em]">Engenharia Sustentável</span>
           </div>
           
-          {/* Título Principal Compactado */}
+          {/* Título Principal com Degradê */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter uppercase transition-all">
             FUTURO <br className="hidden md:block"/>
-            <span className="text-[#1BA19A]">CONSTRUÍMOS AGORA!</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1BA19A] via-[#24cdc4] to-[#1BA19A]">
+              CONSTRUÍMOS AGORA!
+            </span>
           </h1>
           
           {/* Parágrafo de Apoio - Manifesto com Melhor Distribuição */}
