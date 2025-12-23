@@ -169,7 +169,13 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
              <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 px-6 py-2 bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 text-[9px] font-bold uppercase tracking-widest hover:bg-[#1BA19A] hover:text-white transition-all rounded">
                <Edit2 className="h-3.5 w-3.5" /> Editar Registro
              </button>
-             <button onClick={() => onDeletePost?.(post.id)} className="p-2 text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition-all">
+             <button 
+                onClick={() => {
+                  console.log('[DEBUG-CLICK] Botão de lixeira pressionado para o Post:', post.title);
+                  onDeletePost?.(post.id);
+                }} 
+                className="p-2 text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition-all"
+             >
                <Trash2 className="h-4 w-4" />
              </button>
           </div>

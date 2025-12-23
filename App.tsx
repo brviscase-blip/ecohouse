@@ -12,6 +12,7 @@ import EditorView from './components/EditorView';
 import AdminPortal from './components/AdminPortal';
 import { BlogPost, PostImage } from './types';
 import { supabase } from './lib/supabase';
+import { Trash2, AlertTriangle, X } from 'lucide-react';
 
 const INITIAL_POSTS: BlogPost[] = [
   {
@@ -41,9 +42,11 @@ const App: React.FC = () => {
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(INITIAL_POSTS);
+  
+  // Estado para o Modal de Confirmação de Exclusão
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
 
   const toSupabase = (post: Partial<BlogPost>) => {
-    // Garantir que as imagens adicionais sejam enviadas como objetos puros para o JSONB
     const sanitizedAdditional = (post.additionalImages || []).map(img => {
       if (typeof img === 'string') return { url: img, posX: 50, posY: 50 };
       return img;
@@ -66,7 +69,6 @@ const App: React.FC = () => {
   const toFrontend = (data: any): BlogPost => {
     if (!data) throw new Error("Dados do Supabase estão vazios");
     
-    // Normalizar imagens adicionais para o novo formato de objeto
     const rawImgs = Array.isArray(data.imagens_adicionais) ? data.imagens_adicionais : [];
     const normalizedAdditional: PostImage[] = rawImgs.map((img: any) => {
       if (typeof img === 'string') return { url: img, posX: 50, posY: 50 };
@@ -109,20 +111,8 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const saved = localStorage.getItem('cs_blog_posts');
-    if (saved) {
-      try {
-        setBlogPosts(JSON.parse(saved));
-      } catch (e) {
-        console.error("Erro ao carregar cache local:", e);
-      }
-    }
     fetchPosts();
   }, [fetchPosts]);
-
-  useEffect(() => {
-    localStorage.setItem('cs_blog_posts', JSON.stringify(blogPosts));
-  }, [blogPosts]);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -169,7 +159,7 @@ const App: React.FC = () => {
     } catch (error: any) {
       setBlogPosts(prev => prev.filter(p => p.id !== tempId));
       console.error('Erro ao salvar:', error);
-      alert(`Erro ao salvar no servidor: ${error.message}. Certifique-se de que as colunas pos_x_imagem, pos_y_imagem existem e imagens_adicionais é do tipo JSONB.`);
+      alert(`Erro ao salvar no servidor: ${error.message}`);
     }
   };
 
@@ -193,8 +183,19 @@ const App: React.FC = () => {
     }
   };
 
-  const handleDeletePost = async (id: string | number) => {
-    if (!confirm('Deseja realmente excluir este registro técnico?')) return;
+  // Função disparada pelo botão da lixeira
+  const handleDeletePost = (id: string | number) => {
+    console.log('[DEBUG-DELETE] Solicitando confirmação para ID:', id);
+    setDeletingId(id);
+  };
+
+  // Execução real após confirmação no modal
+  const executeDelete = async () => {
+    const id = deletingId;
+    if (!id) return;
+    
+    console.log('[DEBUG-DELETE] Iniciando execução no banco para ID:', id);
+    setDeletingId(null);
 
     const previousPosts = [...blogPosts];
     setBlogPosts(prev => prev.filter(p => p.id !== id));
@@ -207,10 +208,11 @@ const App: React.FC = () => {
         .eq('id', id);
 
       if (error) throw error;
-    } catch (error) {
+      console.log('[DEBUG-DELETE] Sucesso na exclusão.');
+    } catch (error: any) {
       console.error('[SUPABASE] Erro ao remover:', error);
       setBlogPosts(previousPosts);
-      alert('Erro ao remover do servidor.');
+      alert(`Erro ao remover do servidor: ${error.message || 'Erro de conexão'}`);
     }
   };
 
@@ -262,6 +264,41 @@ const App: React.FC = () => {
         onLogin={() => setIsAdmin(true)} 
         onLogout={() => setIsAdmin(false)} 
       />
+
+      {/* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO (SUBSTITUTO DO CONFIRM BLOQUEADO) */}
+      {deletingId !== null && (
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md p-8 md:p-10 shadow-2xl relative border border-red-500/20 rounded-3xl overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-red-500 animate-pulse"></div>
+            
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-red-50 dark:bg-red-950/30 text-red-500 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-inner">
+                <AlertTriangle className="h-8 w-8" />
+              </div>
+              
+              <h2 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-4">Confirmar Exclusão</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-light leading-relaxed mb-8">
+                Deseja realmente remover este <span className="font-bold text-red-500">registro técnico</span> permanentemente? Esta ação é irreversível no servidor.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-4 w-full">
+                <button 
+                  onClick={() => setDeletingId(null)}
+                  className="py-4 px-6 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={executeDelete}
+                  className="py-4 px-6 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
