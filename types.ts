@@ -17,14 +17,14 @@ export interface Service {
 }
 
 export interface BlogPost {
-  id: number;
+  id: number | string;
   date: string;
   category: string;
   title: string;
   excerpt: string;
   content?: string; 
   imageUrl: string;
-  additionalImages?: string[]; // Galeria de imagens adicionais
+  additionalImages?: string[]; 
   readTime: string;
 }
 

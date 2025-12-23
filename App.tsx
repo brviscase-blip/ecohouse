@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Footer from './components/Footer';
@@ -10,6 +11,7 @@ import PostView from './components/PostView';
 import EditorView from './components/EditorView';
 import AdminPortal from './components/AdminPortal';
 import { BlogPost } from './types';
+import { supabase } from './lib/supabase';
 
 const INITIAL_POSTS: BlogPost[] = [
   {
@@ -21,16 +23,6 @@ const INITIAL_POSTS: BlogPost[] = [
     content: 'O projeto Alphaville foi um desafio técnico que uniu design biofílico à engenharia de precisão...',
     imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
     readTime: '8 min'
-  },
-  {
-    id: 2,
-    date: '10 Fev, 2024',
-    category: 'Inovação',
-    title: 'Sistemas Fotovoltaicos Integrados à Fachada',
-    excerpt: 'A revolução dos vidros inteligentes que geram energia sem comprometer a estética arquitetônica.',
-    content: 'A integração de células fotovoltaicas em elementos estruturais é o próximo passo da construção civil...',
-    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80',
-    readTime: '12 min'
   }
 ];
 
@@ -45,18 +37,68 @@ const App: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(INITIAL_POSTS);
+
+  // Mapeamento De/Para com verificações de segurança
+  const toSupabase = (post: Partial<BlogPost>) => ({
+    titulo: post.title || 'Sem título',
+    categoria: post.category || 'Inovação',
+    resumo: post.excerpt || '',
+    conteudo: post.content || '',
+    url_imagem: post.imageUrl || '',
+    tempo_leitura: post.readTime || '1 min',
+    data_publicacao: post.date || new Date().toLocaleDateString(),
+    imagens_adicionais: post.additionalImages || []
+  });
+
+  const toFrontend = (data: any): BlogPost => {
+    if (!data) throw new Error("Dados do Supabase estão vazios");
+    return {
+      id: data.id,
+      date: data.data_publicacao,
+      category: data.categoria,
+      title: data.titulo,
+      excerpt: data.resumo,
+      content: data.conteudo,
+      imageUrl: data.url_imagem,
+      readTime: data.tempo_leitura,
+      additionalImages: data.imagens_adicionais || []
+    };
+  };
+
+  const fetchPosts = useCallback(async () => {
+    console.log('[SUPABASE] Sincronizando com banco...');
+    try {
+      const { data, error } = await supabase
+        .from('artigos')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) throw error;
+      if (data) {
+        setBlogPosts(data.map(toFrontend));
+        console.log('[SUPABASE] Sincronização concluída');
+      }
+    } catch (error) {
+      console.error('[SUPABASE] Erro ao buscar:', error);
+    }
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem('cs_blog_posts');
     if (saved) {
-      setBlogPosts(JSON.parse(saved));
-    } else {
-      setBlogPosts(INITIAL_POSTS);
-      localStorage.setItem('cs_blog_posts', JSON.stringify(INITIAL_POSTS));
+      try {
+        setBlogPosts(JSON.parse(saved));
+      } catch (e) {
+        console.error("Erro ao carregar cache local:", e);
+      }
     }
-  }, []);
+    fetchPosts();
+  }, [fetchPosts]);
+
+  useEffect(() => {
+    localStorage.setItem('cs_blog_posts', JSON.stringify(blogPosts));
+  }, [blogPosts]);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -78,21 +120,85 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSaveNewPost = (post: BlogPost) => {
+  const handleSaveNewPost = async (post: BlogPost) => {
+    const tempId = `temp-${Date.now()}`;
+    const optimisticPost = { ...post, id: tempId };
+
+    // 1. Atualizar local IMEDIATAMENTE
+    setBlogPosts(prev => [optimisticPost, ...prev]);
     setIsCreatingPost(false);
-    const updatedPosts = [post, ...blogPosts];
-    setBlogPosts(updatedPosts);
-    localStorage.setItem('cs_blog_posts', JSON.stringify(updatedPosts));
-    setSelectedPost(null);
     setCurrentView('blog');
-    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+
+    console.log('[SUPABASE] Tentando inserir novo artigo...');
+
+    try {
+      const payload = toSupabase(post);
+      const { data, error } = await supabase
+        .from('artigos')
+        .insert(payload)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('[SUPABASE] Erro retornado pelo banco:', error);
+        throw error;
+      }
+      
+      if (!data) throw new Error("Banco não retornou dados após inserção.");
+
+      // 3. Substituir temporário pelo real
+      setBlogPosts(prev => 
+        prev.map(p => p.id === tempId ? toFrontend(data) : p)
+      );
+      console.log('[SUPABASE] Item adicionado com sucesso:', data.id);
+    } catch (error: any) {
+      console.error('[SUPABASE] Falha crítica na sincronização:', error.message || error);
+      // Reverter estado local em caso de erro
+      setBlogPosts(prev => prev.filter(p => p.id !== tempId));
+      alert(`Erro ao salvar no servidor: ${error.message || 'Verifique sua conexão ou as configurações do banco.'}`);
+    }
   };
 
-  const handleUpdateExistingPost = (updatedPost: BlogPost) => {
-    const updatedPosts = blogPosts.map(p => p.id === updatedPost.id ? updatedPost : p);
-    setBlogPosts(updatedPosts);
-    localStorage.setItem('cs_blog_posts', JSON.stringify(updatedPosts));
+  const handleUpdateExistingPost = async (updatedPost: BlogPost) => {
+    const previousPosts = [...blogPosts];
+    setBlogPosts(prev => prev.map(p => p.id === updatedPost.id ? updatedPost : p));
     setSelectedPost(updatedPost);
+
+    try {
+      const { error } = await supabase
+        .from('artigos')
+        .update(toSupabase(updatedPost))
+        .eq('id', updatedPost.id);
+
+      if (error) throw error;
+      console.log('[SUPABASE] Item atualizado');
+    } catch (error) {
+      console.error('[SUPABASE] Erro ao atualizar:', error);
+      setBlogPosts(previousPosts);
+      alert('Erro ao atualizar no servidor. Revertendo alterações locais.');
+    }
+  };
+
+  const handleDeletePost = async (id: string | number) => {
+    if (!confirm('Deseja realmente excluir este registro técnico?')) return;
+
+    const previousPosts = [...blogPosts];
+    setBlogPosts(prev => prev.filter(p => p.id !== id));
+    setSelectedPost(null);
+
+    try {
+      const { error } = await supabase
+        .from('artigos')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      console.log('[SUPABASE] Item removido');
+    } catch (error) {
+      console.error('[SUPABASE] Erro ao remover:', error);
+      setBlogPosts(previousPosts);
+      alert('Erro ao remover o item do servidor. Registro restaurado localmente.');
+    }
   };
 
   return (
@@ -116,6 +222,7 @@ const App: React.FC = () => {
             onBack={() => setSelectedPost(null)} 
             isAdmin={isAdmin}
             onUpdatePost={handleUpdateExistingPost}
+            onDeletePost={handleDeletePost}
           />
         ) : (
           <>
@@ -135,7 +242,6 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* Exibe o Footer apenas se NÃO estiver na Home e não tiver um post selecionado */}
       {currentView !== 'home' && !selectedPost && <Footer />}
       
       <AdminPortal 

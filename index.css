@@ -6,15 +6,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "kern" 1, "liga" 1;
 }
 
 html {
   scroll-behavior: smooth;
-  /* Reduzido de 90% para 75% para aplicar o zoom out de 25% solicitado */
-  font-size: 75%;
+  font-size: 75%; /* Zoom out global de 25% solicitado anteriormente */
   -webkit-text-size-adjust: 100%;
-  /* GARANTIA DE SCROLL DESKTOP */
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -26,85 +23,79 @@ body {
   background-color: #ffffff;
   transition: background-color 0.5s ease;
   overflow-x: hidden;
-  /* Evita que o scroll-x hidden do body oculte o scroll-y em alguns navegadores */
   overflow-y: auto; 
 }
 
-/* Blueprint Grid Texture - Usando a nova cor #1BA19A */
 .bg-blueprint {
   background-image: 
-    linear-gradient(rgba(27, 161, 154, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(27, 161, 154, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(rgba(27, 161, 154, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 161, 154, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
 }
 
 .dark .bg-blueprint {
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
 
-/* Divisor Técnico entre Seções */
-.section-divider {
-  position: relative;
-  height: 2px;
-  width: 100%;
-  background: linear-gradient(to right, transparent, #1BA19A, transparent);
-  opacity: 0.3;
-}
-
-/* Transição global refinada */
 *, *::before, *::after {
-  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-h1, h2, h3, h4, .font-display {
+h1, h2, h3, h4 {
   font-family: 'Ubuntu', sans-serif;
   font-weight: 700;
   letter-spacing: -0.01em;
-  line-height: 1.2;
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-slow-zoom {
-  animation: slowZoom 25s infinite alternate linear;
-}
-
-@keyframes slowZoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.05); }
-}
-
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: #1BA19A;
-  border-radius: 0px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #1BA19A;
-  filter: brightness(0.9);
 }
 
+/* Tipografia Prose Limpa e Robusta */
 .prose {
-  max-width: none;
+  color: #334155;
+}
+
+.prose p {
+  margin-bottom: 2rem;
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+.prose h2, .prose h3 {
+  color: #0f172a;
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.dark .prose {
+  color: #cbd5e1;
+}
+
+.dark .prose h2, .dark .prose h3 {
+  color: #f8fafc;
+}
+
+.prose strong {
+  font-weight: 700;
+  color: #1BA19A;
 }

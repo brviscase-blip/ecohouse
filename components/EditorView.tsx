@@ -28,6 +28,21 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // DEBUG: Monitoramento de estado para identificar por que o botão está desabilitado
+  useEffect(() => {
+    const incompleto = !title.trim() || !imageUrl || !extractedHtml || isProcessing;
+    if (incompleto) {
+      console.log('[DEBUG EDITOR] Requisitos pendentes:', {
+        tituloOk: !!title.trim(),
+        imagemCapaOk: !!imageUrl,
+        documentoWordOk: !!extractedHtml,
+        processando: isProcessing
+      });
+    } else {
+      console.log('[DEBUG EDITOR] Formulário pronto para publicação.');
+    }
+  }, [title, imageUrl, extractedHtml, isProcessing]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -41,21 +56,29 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
   const handleWordImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    console.log('[DEBUG EDITOR] Iniciando importação do Word:', file.name);
     setWordFileName(file.name);
     setIsProcessing(true);
+    
     try {
       const mammoth = await import(MAMMOTH_URL);
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.default.convertToHtml({ arrayBuffer });
+      
       if (result.value) {
+        console.log('[DEBUG EDITOR] HTML extraído com sucesso. Tamanho:', result.value.length);
         setExtractedHtml(result.value);
         const text = result.value.replace(/<[^>]*>?/gm, '');
         const words = text.trim().split(/\s+/).length;
         const minutes = Math.max(1, Math.ceil(words / 225));
         setReadTime(`${minutes} min`);
+      } else {
+        console.warn('[DEBUG EDITOR] O arquivo Word parece estar vazio ou sem conteúdo compatível.');
       }
     } catch (err) {
-      alert("Erro ao processar Word.");
+      console.error('[DEBUG EDITOR] Erro crítico no processamento do Mammoth:', err);
+      alert("Erro ao processar Word. Verifique o console para detalhes.");
     } finally {
       setIsProcessing(false);
     }
@@ -64,6 +87,7 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, isCover: boolean) => {
     const file = e.target.files?.[0];
     if (file) {
+      console.log(`[DEBUG EDITOR] Carregando imagem (${isCover ? 'Capa' : 'Galeria'}):`, file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64 = reader.result as string;
@@ -79,6 +103,28 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
 
   const removeAdditionalImage = (index: number) => {
     setAdditionalImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleFinalPublish = () => {
+    try {
+      console.log('[DEBUG EDITOR] Acionando onSave...');
+      const postData: BlogPost = {
+        id: Date.now(), // ID Temporário
+        date: new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date()),
+        title: title.toUpperCase(),
+        category,
+        excerpt: extractedHtml.replace(/<[^>]*>?/gm, '').substring(0, 160).trim() + '...',
+        content: extractedHtml,
+        readTime,
+        imageUrl,
+        additionalImages
+      };
+      
+      onSave(postData);
+    } catch (error) {
+      console.error('[DEBUG EDITOR] Erro ao tentar disparar onSave:', error);
+      alert('Ocorreu um erro ao preparar os dados para o servidor.');
+    }
   };
 
   const isFormIncomplete = !title.trim() || !imageUrl || !extractedHtml || isProcessing;
@@ -158,7 +204,6 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
             </div>
           </div>
 
-          {/* Galeria de Imagens Adicionais */}
           <div>
             <label className="block text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">Galeria de Fotos (Opcional)</label>
             <div className="grid grid-cols-4 gap-2">
@@ -223,17 +268,7 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
           </div>
 
           <button 
-            onClick={() => onSave({
-              id: Date.now(),
-              date: new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date()),
-              title: title.toUpperCase(),
-              category,
-              excerpt: extractedHtml.replace(/<[^>]*>?/gm, '').substring(0, 160).trim() + '...',
-              content: extractedHtml,
-              readTime,
-              imageUrl,
-              additionalImages
-            })}
+            onClick={handleFinalPublish}
             disabled={isFormIncomplete}
             className={`w-full py-4 text-xs font-bold uppercase tracking-[0.3em] transition-all shadow-lg ${isFormIncomplete ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-950 dark:bg-emerald-600 hover:bg-emerald-700 text-white active:scale-95'}`}
           >
