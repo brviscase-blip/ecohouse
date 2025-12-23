@@ -24,6 +24,8 @@ export interface BlogPost {
   excerpt: string;
   content?: string; 
   imageUrl: string;
+  imagePosX?: number; // Porcentagem X (0-100)
+  imagePosY?: number; // Porcentagem Y (0-100)
   additionalImages?: string[]; 
   readTime: string;
 }

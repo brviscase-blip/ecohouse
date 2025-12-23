@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   ChevronLeft, Edit2, X, Image as ImageIcon, 
   CheckCircle, Upload, Trash2, 
-  Plus, Share2, Calendar, Clock
+  Plus, Share2, Calendar, Clock, Move
 } from 'lucide-react';
 import { BlogPost } from '../types';
 
@@ -20,15 +20,25 @@ interface PostViewProps {
 
 const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost, onDeletePost }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedPost, setEditedPost] = useState<BlogPost>({ ...post, additionalImages: post.additionalImages || [] });
+  const [editedPost, setEditedPost] = useState<BlogPost>({ 
+    ...post, 
+    additionalImages: post.additionalImages || [],
+    imagePosX: post.imagePosX ?? 50,
+    imagePosY: post.imagePosY ?? 50
+  });
   const [showSavedMsg, setShowSavedMsg] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isEditing) {
-      setEditedPost({ ...post, additionalImages: post.additionalImages || [] });
+      setEditedPost({ 
+        ...post, 
+        additionalImages: post.additionalImages || [],
+        imagePosX: post.imagePosX ?? 50,
+        imagePosY: post.imagePosY ?? 50
+      });
     }
   }, [isEditing, post]);
 
@@ -61,7 +71,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
       reader.onloadend = () => {
         const base64 = reader.result as string;
         if (isCover) {
-          setEditedPost({ ...editedPost, imageUrl: base64 });
+          setEditedPost({ ...editedPost, imageUrl: base64, imagePosX: 50, imagePosY: 50 });
         } else {
           setEditedPost(prev => ({
             ...prev,
@@ -73,12 +83,37 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
     }
   };
 
-  const removeAdditionalImage = (index: number) => {
-    setEditedPost(prev => ({
-      ...prev,
-      additionalImages: (prev.additionalImages || []).filter((_, i) => i !== index)
-    }));
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!editedPost.imageUrl) return;
+    setIsDragging(true);
   };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging || !dragContainerRef.current) return;
+      
+      const rect = dragContainerRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      
+      setEditedPost(prev => ({
+        ...prev,
+        imagePosX: Math.max(0, Math.min(100, x)),
+        imagePosY: Math.max(0, Math.min(100, y))
+      }));
+    };
+
+    const handleMouseUp = () => setIsDragging(false);
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +132,6 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
         </div>
       )}
 
-      {/* HEADER - ALINHADO À ESQUERDA COM MAIOR LARGURA */}
       <div className="max-w-6xl mx-auto px-6 mb-12 flex items-center justify-between">
         <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-[#1BA19A] font-bold text-[10px] uppercase tracking-widest transition-all">
           <ChevronLeft className="h-4 w-4" /> Voltar para o acervo
@@ -116,7 +150,6 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
       </div>
 
       <article className="max-w-6xl mx-auto px-6">
-        {/* TÍTULO E METADADOS - FOCO À ESQUERDA */}
         <header className="mb-16 text-left">
           <div className="flex items-center gap-4 mb-8">
             <span className="text-[#1BA19A] text-[11px] font-black uppercase tracking-[0.4em] border-l-4 border-[#1BA19A] pl-4">{post.category}</span>
@@ -132,21 +165,21 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
           </p>
         </header>
 
-        {/* IMAGEM PRINCIPAL - AMPLA E ALINHADA */}
         <div className="w-full aspect-[21/9] mb-20 rounded-xl overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800">
-          <img src={post.imageUrl} className="w-full h-full object-cover" alt="Documentação Técnica" />
+          <img 
+            src={post.imageUrl} 
+            className="w-full h-full object-cover" 
+            style={{ objectPosition: `${post.imagePosX ?? 50}% ${post.imagePosY ?? 50}%` }}
+            alt="Documentação Técnica" 
+          />
         </div>
 
-        {/* CONTEÚDO DISTRIBUÍDO */}
         <div className="space-y-16">
-          
-          {/* TEXTO DO ARTIGO - ESCALA AUMENTADA (PROSE-XL) */}
           <div 
             className="prose prose-xl md:prose-2xl dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 font-light leading-relaxed"
             dangerouslySetInnerHTML={{ __html: post.content || post.excerpt || "" }}
           />
 
-          {/* GALERIA DE IMAGENS - DISTRIBUIÇÃO HORIZONTAL */}
           {post.additionalImages && post.additionalImages.length > 0 && (
             <section className="pt-20 border-t border-slate-100 dark:border-slate-900">
               <div className="flex items-center gap-6 mb-12">
@@ -163,7 +196,6 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
             </section>
           )}
 
-          {/* FOOTER DO ARTIGO */}
           <footer className="pt-16 flex items-center justify-between border-t border-slate-100 dark:border-slate-900">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
@@ -185,7 +217,6 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
         </div>
       </article>
 
-      {/* MODAL EDIÇÃO */}
       {isEditing && (
         <div className="fixed inset-0 z-[60000] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 w-full max-w-2xl p-12 my-10 shadow-2xl relative border border-slate-100 dark:border-slate-800 rounded-3xl">
@@ -203,11 +234,42 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[10px] font-black text-[#1BA19A] uppercase tracking-widest mb-3">Imagem de Capa</label>
-                  <label className="aspect-[16/9] bg-slate-100 dark:bg-slate-800 flex items-center justify-center rounded-xl cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border-2 border-dashed border-slate-200 dark:border-slate-700">
-                    <ImageIcon className="h-6 w-6 text-[#1BA19A]" />
-                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, true)} className="hidden" />
-                  </label>
+                  <div className="flex justify-between items-end mb-3">
+                    <label className="block text-[10px] font-black text-[#1BA19A] uppercase tracking-widest">Imagem de Capa</label>
+                    {editedPost.imageUrl && (
+                      <span className="text-[8px] text-slate-400 font-bold uppercase flex items-center gap-1">
+                        <Move className="h-2 w-2" /> Arraste para posicionar
+                      </span>
+                    )}
+                  </div>
+                  <div 
+                    ref={dragContainerRef}
+                    onMouseDown={handleMouseDown}
+                    className={`relative aspect-[16/9] bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border-2 border-dashed border-slate-200 dark:border-slate-700 transition-all ${editedPost.imageUrl ? 'cursor-move' : 'cursor-pointer'}`}
+                  >
+                    {editedPost.imageUrl ? (
+                      <>
+                        <img 
+                          src={editedPost.imageUrl} 
+                          className="w-full h-full object-cover pointer-events-none select-none" 
+                          style={{ objectPosition: `${editedPost.imagePosX}% ${editedPost.imagePosY}%` }}
+                          alt="Preview" 
+                        />
+                        <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center pointer-events-none">
+                          <label className="pointer-events-auto cursor-pointer p-3 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-lg hover:scale-110 transition-transform">
+                            <Upload className="h-4 w-4 text-[#1BA19A]" />
+                            <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, true)} className="hidden" />
+                          </label>
+                        </div>
+                      </>
+                    ) : (
+                      <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer">
+                        <ImageIcon className="h-6 w-6 text-[#1BA19A] mb-2" />
+                        <span className="text-[9px] font-bold text-slate-400 uppercase">Selecionar</span>
+                        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, true)} className="hidden" />
+                      </label>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-[#1BA19A] uppercase tracking-widest mb-3">Documento Word</label>

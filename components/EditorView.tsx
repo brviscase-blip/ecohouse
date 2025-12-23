@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   X, Image as ImageIcon, Clock, 
   Check, Trash2, FileText, Upload,
-  AlertCircle, FileCheck, Type, ChevronDown, Plus
+  AlertCircle, FileCheck, Type, ChevronDown, Plus, Move
 } from 'lucide-react';
 import { BlogPost } from '../types';
 
@@ -18,30 +18,19 @@ interface EditorViewProps {
 const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
   const [title, setTitle] = useState('');
   const [imageUrl, setImageUrl] = useState<string>('');
+  const [imagePosX, setImagePosX] = useState(50);
+  const [imagePosY, setImagePosY] = useState(50);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [category, setCategory] = useState('Inovação');
   const [extractedHtml, setExtractedHtml] = useState<string>('');
   const [wordFileName, setWordFileName] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [readTime, setReadTime] = useState('1 min');
+  const [isDragging, setIsDragging] = useState(false);
   
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // DEBUG: Monitoramento de estado para identificar por que o botão está desabilitado
-  useEffect(() => {
-    const incompleto = !title.trim() || !imageUrl || !extractedHtml || isProcessing;
-    if (incompleto) {
-      console.log('[DEBUG EDITOR] Requisitos pendentes:', {
-        tituloOk: !!title.trim(),
-        imagemCapaOk: !!imageUrl,
-        documentoWordOk: !!extractedHtml,
-        processando: isProcessing
-      });
-    } else {
-      console.log('[DEBUG EDITOR] Formulário pronto para publicação.');
-    }
-  }, [title, imageUrl, extractedHtml, isProcessing]);
+  const dragContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -56,29 +45,21 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
   const handleWordImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    console.log('[DEBUG EDITOR] Iniciando importação do Word:', file.name);
     setWordFileName(file.name);
     setIsProcessing(true);
-    
     try {
       const mammoth = await import(MAMMOTH_URL);
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.default.convertToHtml({ arrayBuffer });
-      
       if (result.value) {
-        console.log('[DEBUG EDITOR] HTML extraído com sucesso. Tamanho:', result.value.length);
         setExtractedHtml(result.value);
         const text = result.value.replace(/<[^>]*>?/gm, '');
         const words = text.trim().split(/\s+/).length;
         const minutes = Math.max(1, Math.ceil(words / 225));
         setReadTime(`${minutes} min`);
-      } else {
-        console.warn('[DEBUG EDITOR] O arquivo Word parece estar vazio ou sem conteúdo compatível.');
       }
     } catch (err) {
-      console.error('[DEBUG EDITOR] Erro crítico no processamento do Mammoth:', err);
-      alert("Erro ao processar Word. Verifique o console para detalhes.");
+      alert("Erro ao processar Word.");
     } finally {
       setIsProcessing(false);
     }
@@ -87,12 +68,13 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, isCover: boolean) => {
     const file = e.target.files?.[0];
     if (file) {
-      console.log(`[DEBUG EDITOR] Carregando imagem (${isCover ? 'Capa' : 'Galeria'}):`, file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64 = reader.result as string;
         if (isCover) {
           setImageUrl(base64);
+          setImagePosX(50);
+          setImagePosY(50);
         } else {
           setAdditionalImages(prev => [...prev, base64]);
         }
@@ -101,30 +83,49 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
     }
   };
 
+  const handleMouseDown = () => {
+    if (imageUrl) setIsDragging(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging || !dragContainerRef.current) return;
+      const rect = dragContainerRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      setImagePosX(Math.max(0, Math.min(100, x)));
+      setImagePosY(Math.max(0, Math.min(100, y)));
+    };
+    const handleMouseUp = () => setIsDragging(false);
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
   const removeAdditionalImage = (index: number) => {
     setAdditionalImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleFinalPublish = () => {
-    try {
-      console.log('[DEBUG EDITOR] Acionando onSave...');
-      const postData: BlogPost = {
-        id: Date.now(), // ID Temporário
-        date: new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date()),
-        title: title.toUpperCase(),
-        category,
-        excerpt: extractedHtml.replace(/<[^>]*>?/gm, '').substring(0, 160).trim() + '...',
-        content: extractedHtml,
-        readTime,
-        imageUrl,
-        additionalImages
-      };
-      
-      onSave(postData);
-    } catch (error) {
-      console.error('[DEBUG EDITOR] Erro ao tentar disparar onSave:', error);
-      alert('Ocorreu um erro ao preparar os dados para o servidor.');
-    }
+    const postData: BlogPost = {
+      id: Date.now(),
+      date: new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date()),
+      title: title.toUpperCase(),
+      category,
+      excerpt: extractedHtml.replace(/<[^>]*>?/gm, '').substring(0, 160).trim() + '...',
+      content: extractedHtml,
+      readTime,
+      imageUrl,
+      imagePosX,
+      imagePosY,
+      additionalImages
+    };
+    onSave(postData);
   };
 
   const isFormIncomplete = !title.trim() || !imageUrl || !extractedHtml || isProcessing;
@@ -132,10 +133,7 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
   return (
     <div className="fixed inset-0 z-[50000] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
       <div className="bg-white dark:bg-slate-900 w-full max-w-lg p-10 my-8 shadow-2xl relative border border-emerald-500/20 transition-colors duration-300">
-        <button 
-          onClick={onCancel} 
-          className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-        >
+        <button onClick={onCancel} className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
           <X className="h-6 w-6" />
         </button>
 
@@ -162,14 +160,29 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">Imagem de Capa</label>
-              <div className="relative aspect-square bg-gray-50 dark:bg-slate-800 border-2 border-dashed border-emerald-500/20 hover:border-emerald-500/50 transition-all flex flex-col items-center justify-center overflow-hidden group">
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Capa</label>
+                {imageUrl && <Move className="h-3 w-3 text-slate-400" />}
+              </div>
+              <div 
+                ref={dragContainerRef}
+                onMouseDown={handleMouseDown}
+                className={`relative aspect-square bg-gray-50 dark:bg-slate-800 border-2 border-dashed border-emerald-500/20 hover:border-emerald-500/50 transition-all flex flex-col items-center justify-center overflow-hidden group ${imageUrl ? 'cursor-move' : ''}`}
+              >
                 {imageUrl ? (
                   <>
-                    <img src={imageUrl} className="w-full h-full object-cover" alt="Preview" />
-                    <button onClick={() => setImageUrl('')} className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Trash2 className="h-6 w-6 text-white" />
-                    </button>
+                    <img 
+                      src={imageUrl} 
+                      className="w-full h-full object-cover pointer-events-none select-none" 
+                      style={{ objectPosition: `${imagePosX}% ${imagePosY}%` }}
+                      alt="Preview" 
+                    />
+                    <div className="absolute inset-0 bg-black/0 hover:bg-black/10 flex items-center justify-center pointer-events-none">
+                       <label className="pointer-events-auto cursor-pointer p-2 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-lg">
+                          <Plus className="h-3 w-3 text-emerald-600" />
+                          <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, true)} className="hidden" />
+                       </label>
+                    </div>
                   </>
                 ) : (
                   <label className="cursor-pointer flex flex-col items-center p-2 text-center w-full h-full justify-center">
@@ -210,10 +223,7 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
               {additionalImages.map((img, idx) => (
                 <div key={idx} className="relative aspect-square group rounded overflow-hidden">
                   <img src={img} className="w-full h-full object-cover" alt="" />
-                  <button 
-                    onClick={() => removeAdditionalImage(idx)}
-                    className="absolute inset-0 bg-red-600/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
-                  >
+                  <button onClick={() => removeAdditionalImage(idx)} className="absolute inset-0 bg-red-600/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
@@ -235,19 +245,10 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
               <span className="text-sm">{category}</span>
               <ChevronDown className={`h-4 w-4 text-emerald-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
-            
             {isDropdownOpen && (
               <div className="absolute top-full left-0 w-full mt-1 bg-white dark:bg-slate-900 border border-emerald-500/20 shadow-2xl z-[70] animate-dropdown">
                 {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => {
-                      setCategory(cat);
-                      setIsDropdownOpen(false);
-                    }}
-                    className={`w-full px-4 py-3 text-left text-xs font-bold uppercase tracking-widest transition-all ${category === cat ? 'bg-emerald-600 text-white' : 'text-slate-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'}`}
-                  >
+                  <button key={cat} type="button" onClick={() => { setCategory(cat); setIsDropdownOpen(false); }} className={`w-full px-4 py-3 text-left text-xs font-bold uppercase tracking-widest transition-all ${category === cat ? 'bg-emerald-600 text-white' : 'text-slate-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'}`}>
                     {cat}
                   </button>
                 ))}
@@ -276,13 +277,6 @@ const EditorView: React.FC<EditorViewProps> = ({ onSave, onCancel }) => {
           </button>
         </div>
       </div>
-
-      <style>{`
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes dropdownScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-dropdown { animation: dropdownScale 0.2s ease-out forwards; transform-origin: top; }
-      `}</style>
     </div>
   );
 };
