@@ -150,19 +150,15 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
       </div>
 
       <article className="max-w-6xl mx-auto px-6">
-        <header className="mb-16 text-left">
+        <header className="mb-10 text-left">
           <div className="flex items-center gap-4 mb-8">
             <span className="text-[#1BA19A] text-[11px] font-black uppercase tracking-[0.4em] border-l-4 border-[#1BA19A] pl-4">{post.category}</span>
             <span className="text-slate-300 text-[11px] font-bold uppercase tracking-widest">/ {post.date}</span>
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold text-slate-950 dark:text-white tracking-tighter leading-[1.1] uppercase mb-10 max-w-5xl">
+          <h1 className="text-4xl md:text-6xl font-bold text-slate-950 dark:text-white tracking-tighter leading-[1.1] uppercase max-w-5xl">
             {post.title}
           </h1>
-          
-          <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-light leading-relaxed max-w-4xl">
-            {post.excerpt}
-          </p>
         </header>
 
         <div className="w-full aspect-[21/9] mb-20 rounded-xl overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800">
