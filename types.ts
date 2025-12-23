@@ -16,6 +16,12 @@ export interface Service {
   description: string;
 }
 
+export interface PostImage {
+  url: string;
+  posX: number;
+  posY: number;
+}
+
 export interface BlogPost {
   id: number | string;
   date: string;
@@ -26,7 +32,7 @@ export interface BlogPost {
   imageUrl: string;
   imagePosX?: number; // Porcentagem X (0-100)
   imagePosY?: number; // Porcentagem Y (0-100)
-  additionalImages?: string[]; 
+  additionalImages?: (string | PostImage)[]; 
   readTime: string;
 }
 

@@ -10,7 +10,7 @@ import Blog from './components/Blog';
 import PostView from './components/PostView';
 import EditorView from './components/EditorView';
 import AdminPortal from './components/AdminPortal';
-import { BlogPost } from './types';
+import { BlogPost, PostImage } from './types';
 import { supabase } from './lib/supabase';
 
 const INITIAL_POSTS: BlogPost[] = [
@@ -22,7 +22,10 @@ const INITIAL_POSTS: BlogPost[] = [
     excerpt: 'Um estudo de caso sobre como reduzimos em 40% o consumo de energia em uma residência de alto padrão.',
     content: 'O projeto Alphaville foi um desafio técnico que uniu design biofílico à engenharia de precisão...',
     imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
-    readTime: '8 min'
+    readTime: '8 min',
+    imagePosX: 50,
+    imagePosY: 50,
+    additionalImages: []
   }
 ];
 
@@ -39,20 +42,41 @@ const App: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(INITIAL_POSTS);
 
-  // Mapeamento De/Para com verificações de segurança
-  const toSupabase = (post: Partial<BlogPost>) => ({
-    titulo: post.title || 'Sem título',
-    categoria: post.category || 'Inovação',
-    resumo: post.excerpt || '',
-    conteudo: post.content || '',
-    url_imagem: post.imageUrl || '',
-    tempo_leitura: post.readTime || '1 min',
-    data_publicacao: post.date || new Date().toLocaleDateString(),
-    imagens_adicionais: post.additionalImages || []
-  });
+  const toSupabase = (post: Partial<BlogPost>) => {
+    // Garantir que as imagens adicionais sejam enviadas como objetos puros para o JSONB
+    const sanitizedAdditional = (post.additionalImages || []).map(img => {
+      if (typeof img === 'string') return { url: img, posX: 50, posY: 50 };
+      return img;
+    });
+
+    return {
+      titulo: post.title || 'Sem título',
+      categoria: post.category || 'Inovação',
+      resumo: post.excerpt || '',
+      conteudo: post.content || '',
+      url_imagem: post.imageUrl || '',
+      pos_x_imagem: post.imagePosX ?? 50,
+      pos_y_imagem: post.imagePosY ?? 50,
+      tempo_leitura: post.readTime || '1 min',
+      data_publicacao: post.date || new Date().toLocaleDateString(),
+      imagens_adicionais: sanitizedAdditional
+    };
+  };
 
   const toFrontend = (data: any): BlogPost => {
     if (!data) throw new Error("Dados do Supabase estão vazios");
+    
+    // Normalizar imagens adicionais para o novo formato de objeto
+    const rawImgs = Array.isArray(data.imagens_adicionais) ? data.imagens_adicionais : [];
+    const normalizedAdditional: PostImage[] = rawImgs.map((img: any) => {
+      if (typeof img === 'string') return { url: img, posX: 50, posY: 50 };
+      return {
+        url: img.url || '',
+        posX: typeof img.posX === 'number' ? img.posX : 50,
+        posY: typeof img.posY === 'number' ? img.posY : 50
+      };
+    });
+
     return {
       id: data.id,
       date: data.data_publicacao,
@@ -61,13 +85,14 @@ const App: React.FC = () => {
       excerpt: data.resumo,
       content: data.conteudo,
       imageUrl: data.url_imagem,
+      imagePosX: data.pos_x_imagem ?? 50,
+      imagePosY: data.pos_y_imagem ?? 50,
       readTime: data.tempo_leitura,
-      additionalImages: data.imagens_adicionais || []
+      additionalImages: normalizedAdditional
     };
   };
 
   const fetchPosts = useCallback(async () => {
-    console.log('[SUPABASE] Sincronizando com banco...');
     try {
       const { data, error } = await supabase
         .from('artigos')
@@ -77,7 +102,6 @@ const App: React.FC = () => {
       if (error) throw error;
       if (data) {
         setBlogPosts(data.map(toFrontend));
-        console.log('[SUPABASE] Sincronização concluída');
       }
     } catch (error) {
       console.error('[SUPABASE] Erro ao buscar:', error);
@@ -124,12 +148,9 @@ const App: React.FC = () => {
     const tempId = `temp-${Date.now()}`;
     const optimisticPost = { ...post, id: tempId };
 
-    // 1. Atualizar local IMEDIATAMENTE
     setBlogPosts(prev => [optimisticPost, ...prev]);
     setIsCreatingPost(false);
     setCurrentView('blog');
-
-    console.log('[SUPABASE] Tentando inserir novo artigo...');
 
     try {
       const payload = toSupabase(post);
@@ -139,23 +160,16 @@ const App: React.FC = () => {
         .select()
         .single();
 
-      if (error) {
-        console.error('[SUPABASE] Erro retornado pelo banco:', error);
-        throw error;
+      if (error) throw error;
+      if (data) {
+        setBlogPosts(prev => 
+          prev.map(p => p.id === tempId ? toFrontend(data) : p)
+        );
       }
-      
-      if (!data) throw new Error("Banco não retornou dados após inserção.");
-
-      // 3. Substituir temporário pelo real
-      setBlogPosts(prev => 
-        prev.map(p => p.id === tempId ? toFrontend(data) : p)
-      );
-      console.log('[SUPABASE] Item adicionado com sucesso:', data.id);
     } catch (error: any) {
-      console.error('[SUPABASE] Falha crítica na sincronização:', error.message || error);
-      // Reverter estado local em caso de erro
       setBlogPosts(prev => prev.filter(p => p.id !== tempId));
-      alert(`Erro ao salvar no servidor: ${error.message || 'Verifique sua conexão ou as configurações do banco.'}`);
+      console.error('Erro ao salvar:', error);
+      alert(`Erro ao salvar no servidor: ${error.message}. Certifique-se de que as colunas pos_x_imagem, pos_y_imagem existem e imagens_adicionais é do tipo JSONB.`);
     }
   };
 
@@ -165,17 +179,17 @@ const App: React.FC = () => {
     setSelectedPost(updatedPost);
 
     try {
+      const payload = toSupabase(updatedPost);
       const { error } = await supabase
         .from('artigos')
-        .update(toSupabase(updatedPost))
+        .update(payload)
         .eq('id', updatedPost.id);
 
       if (error) throw error;
-      console.log('[SUPABASE] Item atualizado');
-    } catch (error) {
+    } catch (error: any) {
       console.error('[SUPABASE] Erro ao atualizar:', error);
       setBlogPosts(previousPosts);
-      alert('Erro ao atualizar no servidor. Revertendo alterações locais.');
+      alert(`Erro ao atualizar no servidor: ${error.message}`);
     }
   };
 
@@ -193,11 +207,10 @@ const App: React.FC = () => {
         .eq('id', id);
 
       if (error) throw error;
-      console.log('[SUPABASE] Item removido');
     } catch (error) {
       console.error('[SUPABASE] Erro ao remover:', error);
       setBlogPosts(previousPosts);
-      alert('Erro ao remover o item do servidor. Registro restaurado localmente.');
+      alert('Erro ao remover do servidor.');
     }
   };
 

@@ -5,10 +5,9 @@ import {
   CheckCircle, Upload, Trash2, 
   Plus, Share2, Calendar, Clock, Move
 } from 'lucide-react';
-import { BlogPost } from '../types';
+import { BlogPost, PostImage } from '../types';
 
 const MAMMOTH_URL = "https://esm.sh/mammoth@1.6.0";
-const CATEGORIES = ['Casas Construídas', 'Inovação', 'Certificações', 'Diário de Obra'];
 
 interface PostViewProps {
   post: BlogPost;
@@ -28,14 +27,19 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
   });
   const [showSavedMsg, setShowSavedMsg] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Controle de Arraste (Dragging)
+  const [draggingIdx, setDraggingIdx] = useState<number | 'cover' | null>(null);
+  const dragContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const coverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isEditing) {
       setEditedPost({ 
         ...post, 
-        additionalImages: post.additionalImages || [],
+        additionalImages: (post.additionalImages || []).map(img => 
+          typeof img === 'string' ? { url: img, posX: 50, posY: 50 } : img
+        ),
         imagePosX: post.imagePosX ?? 50,
         imagePosY: post.imagePosY ?? 50
       });
@@ -75,7 +79,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
         } else {
           setEditedPost(prev => ({
             ...prev,
-            additionalImages: [...(prev.additionalImages || []), base64]
+            additionalImages: [...(prev.additionalImages || []), { url: base64, posX: 50, posY: 50 }]
           }));
         }
       };
@@ -83,29 +87,52 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!editedPost.imageUrl) return;
-    setIsDragging(true);
+  const removeAdditionalImage = (index: number) => {
+    setEditedPost(prev => ({
+      ...prev,
+      additionalImages: (prev.additionalImages || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleMouseDown = (idx: number | 'cover') => {
+    setDraggingIdx(idx);
   };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !dragContainerRef.current) return;
+      if (draggingIdx === null) return;
       
-      const rect = dragContainerRef.current.getBoundingClientRect();
+      let rect;
+      if (draggingIdx === 'cover') {
+        rect = coverRef.current?.getBoundingClientRect();
+      } else {
+        rect = dragContainerRefs.current[draggingIdx]?.getBoundingClientRect();
+      }
+
+      if (!rect) return;
+
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
-      
-      setEditedPost(prev => ({
-        ...prev,
-        imagePosX: Math.max(0, Math.min(100, x)),
-        imagePosY: Math.max(0, Math.min(100, y))
-      }));
+      const posX = Math.max(0, Math.min(100, x));
+      const posY = Math.max(0, Math.min(100, y));
+
+      if (draggingIdx === 'cover') {
+        setEditedPost(prev => ({ ...prev, imagePosX: posX, imagePosY: posY }));
+      } else {
+        setEditedPost(prev => {
+          const newImgs = [...(prev.additionalImages || [])];
+          const current = newImgs[draggingIdx];
+          if (typeof current === 'object') {
+             newImgs[draggingIdx] = { ...current, posX, posY };
+          }
+          return { ...prev, additionalImages: newImgs };
+        });
+      }
     };
 
-    const handleMouseUp = () => setIsDragging(false);
+    const handleMouseUp = () => setDraggingIdx(null);
 
-    if (isDragging) {
+    if (draggingIdx !== null) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
@@ -113,7 +140,7 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging]);
+  }, [draggingIdx]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,7 +182,6 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
             <span className="text-[#1BA19A] text-[11px] font-black uppercase tracking-[0.4em] border-l-4 border-[#1BA19A] pl-4">{post.category}</span>
             <span className="text-slate-300 text-[11px] font-bold uppercase tracking-widest">/ {post.date}</span>
           </div>
-          
           <h1 className="text-4xl md:text-6xl font-bold text-slate-950 dark:text-white tracking-tighter leading-[1.1] uppercase max-w-5xl">
             {post.title}
           </h1>
@@ -183,11 +209,22 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
                 <div className="h-px bg-slate-100 dark:bg-slate-800 w-full"></div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {post.additionalImages.map((img, idx) => (
-                  <div key={idx} className="aspect-video rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-lg group">
-                    <img src={img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={`Anexo Técnico ${idx}`} />
-                  </div>
-                ))}
+                {post.additionalImages.map((img, idx) => {
+                  const isObj = typeof img === 'object';
+                  const url = isObj ? img.url : img;
+                  const px = isObj ? img.posX : 50;
+                  const py = isObj ? img.posY : 50;
+                  return (
+                    <div key={idx} className="aspect-video rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-lg group">
+                      <img 
+                        src={url} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+                        style={{ objectPosition: `${px}% ${py}%` }}
+                        alt={`Anexo Técnico ${idx}`} 
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </section>
           )}
@@ -215,33 +252,29 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
 
       {isEditing && (
         <div className="fixed inset-0 z-[60000] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-2xl p-12 my-10 shadow-2xl relative border border-slate-100 dark:border-slate-800 rounded-3xl">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-4xl p-10 md:p-14 my-10 shadow-2xl relative border border-slate-100 dark:border-slate-800 rounded-3xl">
             <button onClick={() => setIsEditing(false)} className="absolute top-8 right-8 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
               <X className="h-7 w-7" />
             </button>
             
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white uppercase tracking-tighter mb-10 border-b border-slate-100 dark:border-slate-800 pb-4">Ajustar Registro Técnico</h2>
             
-            <form onSubmit={handleSave} className="space-y-8">
+            <form onSubmit={handleSave} className="space-y-10">
               <div>
                 <label className="block text-[10px] font-black text-[#1BA19A] uppercase tracking-widest mb-3">Título do Artigo</label>
                 <input type="text" value={editedPost.title} onChange={(e) => setEditedPost({ ...editedPost, title: e.target.value })} className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-[#1BA19A] text-slate-950 dark:text-white font-medium" />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <div className="flex justify-between items-end mb-3">
                     <label className="block text-[10px] font-black text-[#1BA19A] uppercase tracking-widest">Imagem de Capa</label>
-                    {editedPost.imageUrl && (
-                      <span className="text-[8px] text-slate-400 font-bold uppercase flex items-center gap-1">
-                        <Move className="h-2 w-2" /> Arraste para posicionar
-                      </span>
-                    )}
+                    {editedPost.imageUrl && <span className="text-[8px] text-slate-400 font-bold uppercase flex items-center gap-1"><Move className="h-2.5 w-2.5" /> Arraste na imagem</span>}
                   </div>
                   <div 
-                    ref={dragContainerRef}
-                    onMouseDown={handleMouseDown}
-                    className={`relative aspect-[16/9] bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border-2 border-dashed border-slate-200 dark:border-slate-700 transition-all ${editedPost.imageUrl ? 'cursor-move' : 'cursor-pointer'}`}
+                    ref={coverRef}
+                    onMouseDown={() => handleMouseDown('cover')}
+                    className={`relative aspect-video bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border-2 border-dashed border-slate-200 dark:border-slate-700 transition-all ${editedPost.imageUrl ? 'cursor-move' : 'cursor-pointer'}`}
                   >
                     {editedPost.imageUrl ? (
                       <>
@@ -269,15 +302,56 @@ const PostView: React.FC<PostViewProps> = ({ post, onBack, isAdmin, onUpdatePost
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-[#1BA19A] uppercase tracking-widest mb-3">Documento Word</label>
-                  <label className="aspect-[16/9] bg-slate-100 dark:bg-slate-800 flex items-center justify-center rounded-xl cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border-2 border-dashed border-slate-200 dark:border-slate-700">
+                  <label className="aspect-video bg-slate-100 dark:bg-slate-800 flex items-center justify-center rounded-xl cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border-2 border-dashed border-slate-200 dark:border-slate-700">
                     {isProcessing ? <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#1BA19A] border-t-transparent"></div> : <Upload className="h-6 w-6 text-[#1BA19A]" />}
                     <input type="file" accept=".docx" onChange={handleWordImport} className="hidden" />
                   </label>
                 </div>
               </div>
 
+              <div>
+                <label className="block text-[10px] font-black text-[#1BA19A] uppercase tracking-widest mb-5">Anexos Técnicos (Drag para posicionar)</label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {(editedPost.additionalImages || []).map((img, idx) => {
+                    const isObj = typeof img === 'object';
+                    const url = isObj ? img.url : img;
+                    const px = isObj ? img.posX : 50;
+                    const py = isObj ? img.posY : 50;
+                    return (
+                      <div 
+                        key={idx} 
+                        ref={el => dragContainerRefs.current[idx] = el}
+                        onMouseDown={() => handleMouseDown(idx)}
+                        className="relative aspect-square bg-slate-50 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 cursor-move group"
+                      >
+                        <img 
+                          src={url} 
+                          className="w-full h-full object-cover pointer-events-none select-none" 
+                          style={{ objectPosition: `${px}% ${py}%` }}
+                          alt="" 
+                        />
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); removeAdditionalImage(idx); }}
+                          className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                        <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded text-[7px] text-white font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                          Posicionar
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <label className="aspect-square bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center rounded-xl cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border-2 border-dashed border-slate-200 dark:border-slate-700">
+                    <Plus className="h-5 w-5 text-[#1BA19A] mb-1" />
+                    <span className="text-[8px] font-bold text-slate-400 uppercase">Novo Anexo</span>
+                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, false)} className="hidden" />
+                  </label>
+                </div>
+              </div>
+
               <button type="submit" className="w-full py-5 bg-[#1BA19A] text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-xl shadow-xl hover:bg-slate-900 transition-all active:scale-[0.98]">
-                Atualizar Servidor
+                Salvar Todas as Alterações
               </button>
             </form>
           </div>
