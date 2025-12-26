@@ -46,10 +46,28 @@ const App: React.FC = () => {
   // Estado para o Modal de Confirmação de Exclusão
   const [deletingId, setDeletingId] = useState<string | number | null>(null);
 
+  const formatErrorMessage = (error: any): string => {
+    if (!error) return "Erro desconhecido";
+    if (typeof error === 'string') return error;
+    if (error.message) return error.message;
+    if (error.error_description) return error.error_description;
+    
+    try {
+      // Supabase errors often have a structured error object
+      return JSON.stringify(error, null, 2);
+    } catch {
+      return String(error);
+    }
+  };
+
   const toSupabase = (post: Partial<BlogPost>) => {
     const sanitizedAdditional = (post.additionalImages || []).map(img => {
       if (typeof img === 'string') return { url: img, posX: 50, posY: 50 };
-      return img;
+      return {
+        url: img.url,
+        posX: Math.round(img.posX ?? 50),
+        posY: Math.round(img.posY ?? 50)
+      };
     });
 
     return {
@@ -58,8 +76,8 @@ const App: React.FC = () => {
       resumo: post.excerpt || '',
       conteudo: post.content || '',
       url_imagem: post.imageUrl || '',
-      pos_x_imagem: post.imagePosX ?? 50,
-      pos_y_imagem: post.imagePosY ?? 50,
+      pos_x_imagem: Math.round(post.imagePosX ?? 50),
+      pos_y_imagem: Math.round(post.imagePosY ?? 50),
       tempo_leitura: post.readTime || '1 min',
       data_publicacao: post.date || new Date().toLocaleDateString(),
       imagens_adicionais: sanitizedAdditional
@@ -105,7 +123,7 @@ const App: React.FC = () => {
       if (data) {
         setBlogPosts(data.map(toFrontend));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('[SUPABASE] Erro ao buscar:', error);
     }
   }, []);
@@ -158,8 +176,9 @@ const App: React.FC = () => {
       }
     } catch (error: any) {
       setBlogPosts(prev => prev.filter(p => p.id !== tempId));
-      console.error('Erro ao salvar:', error);
-      alert(`Erro ao salvar no servidor: ${error.message}`);
+      const msg = formatErrorMessage(error);
+      console.error('Erro detalhado ao salvar:', error);
+      alert(`Erro ao salvar no servidor: ${msg}`);
     }
   };
 
@@ -177,24 +196,21 @@ const App: React.FC = () => {
 
       if (error) throw error;
     } catch (error: any) {
+      const msg = formatErrorMessage(error);
       console.error('[SUPABASE] Erro ao atualizar:', error);
       setBlogPosts(previousPosts);
-      alert(`Erro ao atualizar no servidor: ${error.message}`);
+      alert(`Erro ao atualizar no servidor: ${msg}`);
     }
   };
 
-  // Função disparada pelo botão da lixeira
   const handleDeletePost = (id: string | number) => {
-    console.log('[DEBUG-DELETE] Solicitando confirmação para ID:', id);
     setDeletingId(id);
   };
 
-  // Execução real após confirmação no modal
   const executeDelete = async () => {
     const id = deletingId;
     if (!id) return;
     
-    console.log('[DEBUG-DELETE] Iniciando execução no banco para ID:', id);
     setDeletingId(null);
 
     const previousPosts = [...blogPosts];
@@ -208,11 +224,11 @@ const App: React.FC = () => {
         .eq('id', id);
 
       if (error) throw error;
-      console.log('[DEBUG-DELETE] Sucesso na exclusão.');
     } catch (error: any) {
+      const msg = formatErrorMessage(error);
       console.error('[SUPABASE] Erro ao remover:', error);
       setBlogPosts(previousPosts);
-      alert(`Erro ao remover do servidor: ${error.message || 'Erro de conexão'}`);
+      alert(`Erro ao remover do servidor: ${msg}`);
     }
   };
 
@@ -265,7 +281,6 @@ const App: React.FC = () => {
         onLogout={() => setIsAdmin(false)} 
       />
 
-      {/* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO (SUBSTITUTO DO CONFIRM BLOQUEADO) */}
       {deletingId !== null && (
         <div className="fixed inset-0 z-[100000] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in">
           <div className="bg-white dark:bg-slate-900 w-full max-w-md p-8 md:p-10 shadow-2xl relative border border-red-500/20 rounded-3xl overflow-hidden">
